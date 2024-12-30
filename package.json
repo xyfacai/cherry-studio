@@ -95,7 +95,7 @@
     "@types/tinycolor2": "^1",
     "@vitejs/plugin-react": "^4.2.1",
     "antd": "^5.22.5",
-    "axios": "^1.7.3",
+    "axios": "^1.7.9",
     "browser-image-compression": "^2.0.2",
     "dayjs": "^1.11.11",
     "dexie": "^4.0.8",

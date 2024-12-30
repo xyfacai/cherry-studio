@@ -4,6 +4,8 @@ import i18n from '@renderer/i18n'
 import { getAssistantSettings, getDefaultModel, getTopNamingModel } from '@renderer/services/AssistantService'
 import { EVENT_NAMES } from '@renderer/services/EventService'
 import { filterContextMessages } from '@renderer/services/MessagesService'
+import DuckDuckGoLiteSearch from '@renderer/tools/DuckDuckGoLiteSearch/function.json'
+import DuckDuckGoLiteSearchCode from '@renderer/tools/DuckDuckGoLiteSearch/index.js?raw'
 import { Assistant, FileTypes, Message, Model, Provider, Suggestion } from '@renderer/types'
 import { removeQuotes } from '@renderer/utils'
 import { last, takeRight } from 'lodash'
@@ -11,7 +13,8 @@ import OpenAI, { AzureOpenAI } from 'openai'
 import {
   ChatCompletionContentPart,
   ChatCompletionCreateParamsNonStreaming,
-  ChatCompletionMessageParam
+  ChatCompletionMessageParam,
+  ChatCompletionTool
 } from 'openai/resources'
 
 import { CompletionsParams } from '.'
@@ -133,7 +136,6 @@ export default class OpenAIProvider extends BaseProvider {
     }
 
     const isOpenAIo1 = model.id.includes('o1-')
-    const isSupportStreamOutput = streamOutput
 
     let time_first_token_millsec = 0
     const start_time_millsec = new Date().getTime()
@@ -148,12 +150,28 @@ export default class OpenAIProvider extends BaseProvider {
       top_p: assistant?.settings?.topP,
       max_tokens: maxTokens,
       keep_alive: this.keepAliveTime,
-      stream: isSupportStreamOutput,
+      stream: streamOutput,
+      tools: [DuckDuckGoLiteSearch as ChatCompletionTool],
       ...this.getCustomParameters(assistant)
     })
 
-    if (!isSupportStreamOutput) {
+    if (!streamOutput) {
       const time_completion_millsec = new Date().getTime() - start_time_millsec
+
+      stream.choices[0].message?.tool_calls?.forEach(async (toolCall) => {
+        const functionName = toolCall.function.name
+        const params = toolCall.function.arguments
+
+        console.log(functionName, DuckDuckGoLiteSearchCode)
+
+        const result = await window.api.vm.run(`
+          var params = ${params};
+          ${DuckDuckGoLiteSearchCode}
+        `)
+
+        console.log(result)
+      })
+
       return onChunk({
         text: stream.choices[0].message?.content || '',
         usage: stream.usage,

@@ -76,6 +76,9 @@ declare global {
         remove: ({ uniqueId, base }: { uniqueId: string; base: KnowledgeBaseParams }) => Promise<void>
         search: ({ search, base }: { search: string; base: KnowledgeBaseParams }) => Promise<ExtractChunkData[]>
       }
+      vm: {
+        run: (code: string) => Promise<any>
+      }
     }
   }
 }

@@ -1,7 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import vm from 'node:vm'
 
 import { Shortcut, ThemeMode } from '@types'
+import axios from 'axios'
 import { BrowserWindow, ipcMain, ProxyConfig, session, shell } from 'electron'
 import log from 'electron-log'
 
@@ -154,4 +156,10 @@ export function registerIpc(mainWindow: BrowserWindow, app: Electron.App) {
   ipcMain.handle('knowledge-base:add', KnowledgeService.add)
   ipcMain.handle('knowledge-base:remove', KnowledgeService.remove)
   ipcMain.handle('knowledge-base:search', KnowledgeService.search)
+
+  // vm
+  ipcMain.handle('run-js', (_, code: string) => {
+    const context = vm.createContext(Object.assign({ fetch: fetch, URL: URL, axios: axios }, global))
+    return vm.runInContext(code, context)
+  })
 }

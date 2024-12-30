@@ -70,6 +70,9 @@ const api = {
       ipcRenderer.invoke('knowledge-base:remove', { uniqueId, base }),
     search: ({ search, base }: { search: string; base: KnowledgeBaseParams }) =>
       ipcRenderer.invoke('knowledge-base:search', { search, base })
+  },
+  vm: {
+    run: (code: string) => ipcRenderer.invoke('run-js', code)
   }
 }
 

@@ -1,0 +1,22 @@
+{
+  "type": "function",
+  "function": {
+    "name": "DuckDuckGoLiteSearch",
+    "description": "A search engine useful for answering questions about current events.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "q": {
+          "type": "string",
+          "description": "Keywords for query"
+        },
+        "kl": {
+          "type": "string",
+          "description": "Language/region code (e.g., wt-wt, us-en, uk-en)",
+          "default": "wt-wt"
+        }
+      },
+      "required": ["q"]
+    }
+  }
+}
