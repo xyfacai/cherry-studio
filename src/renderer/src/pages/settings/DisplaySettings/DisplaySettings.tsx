@@ -1,10 +1,4 @@
-import {
-  CloseOutlined,
-  FileSearchOutlined,
-  FolderOutlined,
-  PictureOutlined,
-  TranslationOutlined
-} from '@ant-design/icons'
+import { FileSearchOutlined, FolderOutlined, PictureOutlined, TranslationOutlined } from '@ant-design/icons'
 import { isMac } from '@renderer/config/constant'
 import { useTheme } from '@renderer/context/ThemeProvider'
 import { useSettings } from '@renderer/hooks/useSettings'
@@ -17,22 +11,13 @@ import {
   setSidebarIcons
 } from '@renderer/store/settings'
 import { ThemeMode } from '@renderer/types'
-import { Button, Input, message, Select, Switch } from 'antd'
+import { Input, message, Select, Switch } from 'antd'
 import { FC, useCallback, useMemo, useState } from 'react'
-import {
-  DragDropContext as DragDropContextType,
-  Draggable as DraggableType,
-  Droppable as DroppableType
-} from 'react-beautiful-dnd'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 
-import { SidebarIcon } from '../../store/settings'
-import { SettingContainer, SettingDivider, SettingGroup, SettingRow, SettingRowTitle, SettingTitle } from '.'
-
-const DragDropContext = DragDropContextType as any
-const Droppable = DroppableType as any
-const Draggable = DraggableType as any
+import { SidebarIcon } from '../../../store/settings'
+import { SettingContainer, SettingDivider, SettingGroup, SettingRow, SettingRowTitle, SettingTitle } from '..'
+import SidebarIconsManager from './SidebarIconsManager'
 
 const DisplaySettings: FC = () => {
   const {
@@ -251,65 +236,14 @@ const DisplaySettings: FC = () => {
       <SettingGroup theme={theme}>
         <SettingTitle>{t('settings.display.sidebar.title')}</SettingTitle>
         <SettingDivider />
-        <DragDropContext onDragEnd={onDragEnd}>
-          <IconSection>
-            <IconColumn>
-              <h4>{t('settings.display.sidebar.visible')}</h4>
-              <Droppable droppableId="visible">
-                {(provided) => (
-                  <IconList ref={provided.innerRef} {...provided.droppableProps}>
-                    {visibleIcons.map((icon, index) => (
-                      <Draggable key={icon.id} draggableId={icon.id} index={index}>
-                        {(provided) => (
-                          <IconItem ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                            <IconContent>
-                              {renderIcon(icon)}
-                              <span>{t(icon.title)}</span>
-                            </IconContent>
-                            {icon.id !== 'chat' && (
-                              <CloseButton onClick={() => moveIcon(icon, 'visible')}>
-                                <CloseOutlined />
-                              </CloseButton>
-                            )}
-                          </IconItem>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </IconList>
-                )}
-              </Droppable>
-            </IconColumn>
-            <ResetButtonWrapper>
-              <Button onClick={handleReset}>{t('common.reset')}</Button>
-            </ResetButtonWrapper>
-            <IconColumn>
-              <h4>{t('settings.display.sidebar.disabled')}</h4>
-              <Droppable droppableId="disabled">
-                {(provided) => (
-                  <IconList ref={provided.innerRef} {...provided.droppableProps}>
-                    {disabledIcons.map((icon, index) => (
-                      <Draggable key={icon.id} draggableId={icon.id} index={index}>
-                        {(provided) => (
-                          <IconItem ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                            <IconContent>
-                              {renderIcon(icon)}
-                              <span>{t(icon.title)}</span>
-                            </IconContent>
-                            <CloseButton onClick={() => moveIcon(icon, 'disabled')}>
-                              <CloseOutlined />
-                            </CloseButton>
-                          </IconItem>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </IconList>
-                )}
-              </Droppable>
-            </IconColumn>
-          </IconSection>
-        </DragDropContext>
+        <SidebarIconsManager
+          visibleIcons={visibleIcons}
+          disabledIcons={disabledIcons}
+          onDragEnd={onDragEnd}
+          onMoveIcon={moveIcon}
+          onReset={handleReset}
+          renderIcon={renderIcon}
+        />
       </SettingGroup>
       <SettingGroup theme={theme}>
         <SettingTitle>{t('settings.display.custom.css')}</SettingTitle>
@@ -327,79 +261,5 @@ const DisplaySettings: FC = () => {
     </SettingContainer>
   )
 }
-
-const IconSection = styled.div`
-  display: flex;
-  gap: 20px;
-  padding: 10px;
-  background: var(--color-background);
-`
-
-const IconColumn = styled.div`
-  flex: 1;
-
-  h4 {
-    margin-bottom: 10px;
-    color: var(--color-text);
-    font-weight: normal;
-  }
-`
-
-const IconList = styled.div`
-  min-height: 200px;
-  padding: 10px;
-  background: var(--color-background-soft);
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
-`
-
-const IconItem = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  margin-bottom: 8px;
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  cursor: move;
-`
-
-const IconContent = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  .iconfont {
-    font-size: 16px;
-    color: var(--color-text);
-  }
-
-  span {
-    color: var(--color-text);
-  }
-`
-
-const CloseButton = styled.div`
-  cursor: pointer;
-  color: var(--color-text-2);
-  opacity: 0;
-  transition: all 0.2s;
-
-  &:hover {
-    color: var(--color-text);
-  }
-
-  ${IconItem}:hover & {
-    opacity: 1;
-  }
-`
-
-const ResetButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 40px;
-`
 
 export default DisplaySettings
