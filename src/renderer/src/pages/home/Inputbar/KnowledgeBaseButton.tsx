@@ -20,12 +20,12 @@ const KnowledgeBaseSelector: FC<Props> = ({ selectedBase, onSelect }) => {
   return (
     <SelectorContainer>
       {knowledgeState.bases.length === 0 ? (
-        <EmptyMessage>{t('knowledge.no_bases')}</EmptyMessage>
+        <EmptyMessage>{t('knowledge_base.no_bases')}</EmptyMessage>
       ) : (
         <>
           {selectedBase && (
             <Button type="link" block onClick={() => onSelect(undefined)} style={{ textAlign: 'left' }}>
-              {t('knowledge.clear_selection')}
+              {t('knowledge_base.clear_selection')}
             </Button>
           )}
           {knowledgeState.bases.map((base) => (
