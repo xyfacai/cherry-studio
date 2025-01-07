@@ -402,6 +402,7 @@
       "display.sidebar.title": "側邊欄設定",
       "display.topic.title": "話題設定",
       "display.sidebar.chat.hiddenMessage": "助手是基礎功能，不支援隱藏",
+      "display.sidebar.empty": "把要隱藏的功能從左側拖拽到這裡",
       "display.sidebar.visible": "顯示我的側邊欄圖標",
       "display.sidebar.disabled": "隱藏我的側邊欄圖標",
       "display.custom.css": "自定義 CSS",

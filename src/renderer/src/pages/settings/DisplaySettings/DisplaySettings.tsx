@@ -11,9 +11,10 @@ import {
   setSidebarIcons
 } from '@renderer/store/settings'
 import { ThemeMode } from '@renderer/types'
-import { Input, message, Select, Switch } from 'antd'
+import { Button, Input, message, Select, Switch } from 'antd'
 import { FC, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
 
 import { SidebarIcon } from '../../../store/settings'
 import { SettingContainer, SettingDivider, SettingGroup, SettingRow, SettingRowTitle, SettingTitle } from '..'
@@ -234,14 +235,19 @@ const DisplaySettings: FC = () => {
         </SettingRow>
       </SettingGroup>
       <SettingGroup theme={theme}>
-        <SettingTitle>{t('settings.display.sidebar.title')}</SettingTitle>
+        <SettingTitle
+          style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{t('settings.display.sidebar.title')}</span>
+          <ResetButtonWrapper>
+            <Button onClick={handleReset}>{t('common.reset')}</Button>
+          </ResetButtonWrapper>
+        </SettingTitle>
         <SettingDivider />
         <SidebarIconsManager
           visibleIcons={visibleIcons}
           disabledIcons={disabledIcons}
           onDragEnd={onDragEnd}
           onMoveIcon={moveIcon}
-          onReset={handleReset}
           renderIcon={renderIcon}
         />
       </SettingGroup>
@@ -261,5 +267,11 @@ const DisplaySettings: FC = () => {
     </SettingContainer>
   )
 }
+
+const ResetButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
 
 export default DisplaySettings

@@ -1,5 +1,4 @@
 import { CloseOutlined } from '@ant-design/icons'
-import { Button } from 'antd'
 import { FC } from 'react'
 import {
   DragDropContext as DragDropContextType,
@@ -20,7 +19,6 @@ interface SidebarIconsManagerProps {
   disabledIcons: SidebarIcon[]
   onDragEnd: (result: any) => void
   onMoveIcon: (icon: SidebarIcon, fromList: 'visible' | 'disabled') => void
-  onReset: () => void
   renderIcon: (icon: SidebarIcon) => React.ReactNode
 }
 
@@ -29,7 +27,6 @@ const SidebarIconsManager: FC<SidebarIconsManagerProps> = ({
   disabledIcons,
   onDragEnd,
   onMoveIcon,
-  onReset,
   renderIcon
 }) => {
   const { t } = useTranslation()
@@ -64,29 +61,30 @@ const SidebarIconsManager: FC<SidebarIconsManagerProps> = ({
             )}
           </Droppable>
         </IconColumn>
-        <ResetButtonWrapper>
-          <Button onClick={onReset}>{t('common.reset')}</Button>
-        </ResetButtonWrapper>
         <IconColumn>
           <h4>{t('settings.display.sidebar.disabled')}</h4>
           <Droppable droppableId="disabled">
             {(provided) => (
               <IconList ref={provided.innerRef} {...provided.droppableProps}>
-                {disabledIcons.map((icon, index) => (
-                  <Draggable key={icon.id} draggableId={icon.id} index={index}>
-                    {(provided) => (
-                      <IconItem ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                        <IconContent>
-                          {renderIcon(icon)}
-                          <span>{t(icon.title)}</span>
-                        </IconContent>
-                        <CloseButton onClick={() => onMoveIcon(icon, 'disabled')}>
-                          <CloseOutlined />
-                        </CloseButton>
-                      </IconItem>
-                    )}
-                  </Draggable>
-                ))}
+                {disabledIcons.length === 0 ? (
+                  <EmptyPlaceholder>{t('settings.display.sidebar.empty')}</EmptyPlaceholder>
+                ) : (
+                  disabledIcons.map((icon, index) => (
+                    <Draggable key={icon.id} draggableId={icon.id} index={index}>
+                      {(provided) => (
+                        <IconItem ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                          <IconContent>
+                            {renderIcon(icon)}
+                            <span>{t(icon.title)}</span>
+                          </IconContent>
+                          <CloseButton onClick={() => onMoveIcon(icon, 'disabled')}>
+                            <CloseOutlined />
+                          </CloseButton>
+                        </IconItem>
+                      )}
+                    </Draggable>
+                  ))
+                )}
                 {provided.placeholder}
               </IconList>
             )}
@@ -116,11 +114,15 @@ const IconColumn = styled.div`
 `
 
 const IconList = styled.div`
-  min-height: 200px;
+  height: 365px;
+  min-height: 365px;
   padding: 10px;
   background: var(--color-background-soft);
   border-radius: 8px;
   border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
 `
 
 const IconItem = styled.div`
@@ -165,11 +167,15 @@ const CloseButton = styled.div`
   }
 `
 
-const ResetButtonWrapper = styled.div`
+const EmptyPlaceholder = styled.div`
   display: flex;
+  flex: 1;
   align-items: center;
   justify-content: center;
-  margin-top: 40px;
+  color: var(--color-text-2);
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
 `
 
 export default SidebarIconsManager
