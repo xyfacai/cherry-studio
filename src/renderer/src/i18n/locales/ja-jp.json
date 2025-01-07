@@ -536,7 +536,7 @@
       "show_window": "ウィンドウを表示",
       "quit": "終了"
     },
-    "knowledge_base": {
+    "knowledge": {
       "title": "ナレッジベース",
       "search": "ナレッジベースを検索",
       "empty": "ナレッジベースが見つかりません",
