@@ -402,6 +402,7 @@
       "display.sidebar.title": "Sidebar Settings",
       "display.sidebar.visible": "Show my sidebar icons",
       "display.sidebar.disabled": "Hide my sidebar icons",
+      "display.sidebar.chat.hiddenMessage": "Assistants are basic functions, not supported for hiding",
       "display.topic.title": "Topic Settings",
       "display.custom.css": "Custom CSS",
       "display.custom.css.placeholder": "/* Put custom CSS here */",

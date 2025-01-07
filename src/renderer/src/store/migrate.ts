@@ -790,6 +790,21 @@ const migrateConfig = {
     state.settings.showPaintingIcon = true
     state.settings.showKnowledgeIcon = true
     return state
+  },
+  '53': (state: RootState) => {
+    state.settings.sidebarIcons = {
+      visible: [
+        { id: 'chat', icon: 'icon-chat', title: 'assistants.title' },
+        { id: 'agents', icon: 'icon-business-smart-assistant', title: 'agents.title' },
+        { id: 'paintings', icon: 'icon-picture', title: 'paintings.title' },
+        { id: 'translate', icon: 'icon-translate', title: 'translate.title' },
+        { id: 'minapp', icon: 'icon-appstore', title: 'minapp.title' },
+        { id: 'knowledge', icon: 'icon-search', title: 'knowledge_base.title' },
+        { id: 'files', icon: 'icon-folder', title: 'files.title' }
+      ],
+      disabled: []
+    }
+    return state
   }
 }
 

@@ -9,9 +9,15 @@ import { isMac } from '@renderer/config/constant'
 import { useTheme } from '@renderer/context/ThemeProvider'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { useAppDispatch } from '@renderer/store'
-import { setClickAssistantToShowTopic, setCustomCss, setShowTopicTime, setSidebarIcons } from '@renderer/store/settings'
+import {
+  setClickAssistantToShowTopic,
+  setCustomCss,
+  setShowMinappIcon,
+  setShowTopicTime,
+  setSidebarIcons
+} from '@renderer/store/settings'
 import { ThemeMode } from '@renderer/types'
-import { Button, Input, Select, Switch } from 'antd'
+import { Button, Input, message, Select, Switch } from 'antd'
 import { FC, useCallback, useMemo, useState } from 'react'
 import {
   DragDropContext as DragDropContextType,
@@ -74,6 +80,7 @@ const DisplaySettings: FC = () => {
     setVisibleIcons([...defaultIcons])
     setDisabledIcons([])
     dispatch(setSidebarIcons({ visible: defaultIcons, disabled: [] }))
+    dispatch(setShowMinappIcon(true))
   }, [defaultIcons, dispatch])
 
   const onDragEnd = useCallback(
@@ -81,6 +88,13 @@ const DisplaySettings: FC = () => {
       if (!result.destination) return
 
       const { source, destination } = result
+
+      // 如果是chat图标且目标是disabled区域,则不允许移动并提示
+      const draggedItem = source.droppableId === 'visible' ? visibleIcons[source.index] : disabledIcons[source.index]
+      if (draggedItem.id === 'chat' && destination.droppableId === 'disabled') {
+        message.warning(t('settings.display.sidebar.chat.hiddenMessage'))
+        return
+      }
 
       if (source.droppableId === destination.droppableId) {
         const list = source.droppableId === 'visible' ? [...visibleIcons] : [...disabledIcons]
@@ -107,18 +121,31 @@ const DisplaySettings: FC = () => {
       const newVisibleIcons = destination.droppableId === 'visible' ? targetList : sourceList
       const newDisabledIcons = destination.droppableId === 'disabled' ? targetList : sourceList
 
+      const isMinappVisible = newVisibleIcons.some((icon) => icon.id === 'minapp')
+      dispatch(setShowMinappIcon(isMinappVisible))
+
       setVisibleIcons(newVisibleIcons)
       setDisabledIcons(newDisabledIcons)
       dispatch(setSidebarIcons({ visible: newVisibleIcons, disabled: newDisabledIcons }))
     },
-    [visibleIcons, disabledIcons, dispatch]
+    [visibleIcons, disabledIcons, dispatch, t]
   )
 
   const moveIcon = useCallback(
     (icon: SidebarIcon, fromList: 'visible' | 'disabled') => {
+      // 如果是chat图标且要移动到disabled列表,则不允许并提示
+      if (icon.id === 'chat' && fromList === 'visible') {
+        message.warning(t('settings.display.sidebar.chat.hiddenMessage'))
+        return
+      }
+
       if (fromList === 'visible') {
         const newVisibleIcons = visibleIcons.filter((i) => i.id !== icon.id)
         const newDisabledIcons = disabledIcons.some((i) => i.id === icon.id) ? disabledIcons : [...disabledIcons, icon]
+
+        if (icon.id === 'minapp') {
+          dispatch(setShowMinappIcon(false))
+        }
 
         setVisibleIcons(newVisibleIcons)
         setDisabledIcons(newDisabledIcons)
@@ -127,12 +154,16 @@ const DisplaySettings: FC = () => {
         const newDisabledIcons = disabledIcons.filter((i) => i.id !== icon.id)
         const newVisibleIcons = visibleIcons.some((i) => i.id === icon.id) ? visibleIcons : [...visibleIcons, icon]
 
+        if (icon.id === 'minapp') {
+          dispatch(setShowMinappIcon(true))
+        }
+
         setDisabledIcons(newDisabledIcons)
         setVisibleIcons(newVisibleIcons)
         dispatch(setSidebarIcons({ visible: newVisibleIcons, disabled: newDisabledIcons }))
       }
     },
-    [visibleIcons, disabledIcons, dispatch]
+    [visibleIcons, disabledIcons, dispatch, t]
   )
 
   // 使用useMemo缓存图标映射
@@ -235,9 +266,11 @@ const DisplaySettings: FC = () => {
                               {renderIcon(icon)}
                               <span>{t(icon.title)}</span>
                             </IconContent>
-                            <CloseButton onClick={() => moveIcon(icon, 'visible')}>
-                              <CloseOutlined />
-                            </CloseButton>
+                            {icon.id !== 'chat' && (
+                              <CloseButton onClick={() => moveIcon(icon, 'visible')}>
+                                <CloseOutlined />
+                              </CloseButton>
+                            )}
                           </IconItem>
                         )}
                       </Draggable>

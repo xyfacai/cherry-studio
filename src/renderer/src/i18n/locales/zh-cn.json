@@ -403,6 +403,7 @@
       "display.sidebar.title": "侧边栏设置",
       "display.sidebar.visible": "显示我的侧边栏图标",
       "display.sidebar.disabled": "隐藏我的侧边栏图标",
+      "display.sidebar.chat.hiddenMessage": "助手是基础功能，不支持隐藏",
       "display.topic.title": "话题设置",
       "display.custom.css": "自定义 CSS",
       "display.custom.css.placeholder": "/* 这里写自定义CSS */",

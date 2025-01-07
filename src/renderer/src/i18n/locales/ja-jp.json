@@ -400,6 +400,7 @@
       "display.sidebar.title": "サイドバー設定",
       "display.sidebar.visible": "サイドバーのアイコンを表示する",
       "display.sidebar.disabled": "サイドバーのアイコンを非表示にする",
+      "display.sidebar.chat.hiddenMessage": "アシスタントは基本的な機能であり、非表示はサポートされていません",
       "display.topic.title": "トピック設定",
       "display.custom.css": "カスタムCSS",
       "display.custom.css.placeholder": "/* ここにカスタムCSSを入力 */",
