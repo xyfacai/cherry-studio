@@ -4,11 +4,17 @@ import { CodeStyleVarious, LanguageVarious, ThemeMode } from '@renderer/types'
 
 export type SendMessageShortcut = 'Enter' | 'Shift+Enter' | 'Ctrl+Enter' | 'Command+Enter'
 
-export interface SidebarIcon {
-  id: string
-  icon: string
-  title: string
-}
+export type SidebarIcon = 'assistants' | 'agents' | 'paintings' | 'translate' | 'minapp' | 'knowledge' | 'files'
+
+export const DEFAULT_SIDEBAR_ICONS: SidebarIcon[] = [
+  'assistants',
+  'agents',
+  'paintings',
+  'translate',
+  'minapp',
+  'knowledge',
+  'files'
+]
 
 export interface SettingsState {
   showAssistants: boolean
@@ -47,14 +53,9 @@ export interface SettingsState {
   translateModelPrompt: string
   autoTranslateWithSpace: boolean
   enableTopicNaming: boolean
-  // Sidebar icons
-  showTranslateIcon: boolean
-  showPaintingIcon: boolean
-  showMinappIcon: boolean
-  showKnowledgeIcon: boolean
-  showFilesIcon: boolean
   customCss: string
   topicNamingPrompt: string
+  // Sidebar icons
   sidebarIcons: {
     visible: SidebarIcon[]
     disabled: SidebarIcon[]
@@ -97,23 +98,10 @@ const initialState: SettingsState = {
   translateModelPrompt: TRANSLATE_PROMPT,
   autoTranslateWithSpace: false,
   enableTopicNaming: true,
-  showTranslateIcon: true,
-  showPaintingIcon: true,
-  showMinappIcon: true,
-  showKnowledgeIcon: true,
-  showFilesIcon: true,
   customCss: '',
   topicNamingPrompt: '',
   sidebarIcons: {
-    visible: [
-      { id: 'chat', icon: 'icon-chat', title: 'assistants.title' },
-      { id: 'agents', icon: 'icon-business-smart-assistant', title: 'agents.title' },
-      { id: 'paintings', icon: 'icon-picture', title: 'paintings.title' },
-      { id: 'translate', icon: 'icon-translate', title: 'translate.title' },
-      { id: 'minapp', icon: 'icon-appstore', title: 'minapp.title' },
-      { id: 'knowledge', icon: 'icon-search', title: 'knowledge_base.title' },
-      { id: 'files', icon: 'icon-folder', title: 'files.title' }
-    ],
+    visible: DEFAULT_SIDEBAR_ICONS,
     disabled: []
   }
 }
@@ -231,21 +219,6 @@ const settingsSlice = createSlice({
     setEnableTopicNaming: (state, action: PayloadAction<boolean>) => {
       state.enableTopicNaming = action.payload
     },
-    setShowTranslateIcon: (state, action: PayloadAction<boolean>) => {
-      state.showTranslateIcon = action.payload
-    },
-    setShowPaintingIcon: (state, action: PayloadAction<boolean>) => {
-      state.showPaintingIcon = action.payload
-    },
-    setShowMinappIcon: (state, action: PayloadAction<boolean>) => {
-      state.showMinappIcon = action.payload
-    },
-    setShowKnowledgeIcon: (state, action: PayloadAction<boolean>) => {
-      state.showKnowledgeIcon = action.payload
-    },
-    setShowFilesIcon: (state, action: PayloadAction<boolean>) => {
-      state.showFilesIcon = action.payload
-    },
     setPasteLongTextThreshold: (state, action: PayloadAction<number>) => {
       state.pasteLongTextThreshold = action.payload
     },
@@ -298,11 +271,6 @@ export const {
   setTranslateModelPrompt,
   setAutoTranslateWithSpace,
   setEnableTopicNaming,
-  setShowTranslateIcon,
-  setShowPaintingIcon,
-  setShowMinappIcon,
-  setShowKnowledgeIcon,
-  setShowFilesIcon,
   setPasteLongTextThreshold,
   setCustomCss,
   setTopicNamingPrompt,

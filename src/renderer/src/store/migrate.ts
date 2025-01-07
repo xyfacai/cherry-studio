@@ -9,6 +9,7 @@ import { isEmpty } from 'lodash'
 import { createMigrate } from 'redux-persist'
 
 import { RootState } from '.'
+import { DEFAULT_SIDEBAR_ICONS } from './settings'
 
 const migrateConfig = {
   '2': (state: RootState) => {
@@ -742,8 +743,6 @@ const migrateConfig = {
     return state
   },
   '49': (state: RootState) => {
-    state.settings.showMinappIcon = true
-    state.settings.showFilesIcon = true
     state.settings.pasteLongTextThreshold = 1500
     if (state.shortcuts) {
       state.shortcuts.shortcuts = [
@@ -776,7 +775,7 @@ const migrateConfig = {
     state.settings.topicNamingPrompt = ''
     return state
   },
-  '53': (state: RootState) => {
+  '54': (state: RootState) => {
     if (state.shortcuts) {
       state.shortcuts.shortcuts.push({
         key: 'search_message',
@@ -787,15 +786,7 @@ const migrateConfig = {
       })
     }
     state.settings.sidebarIcons = {
-      visible: [
-        { id: 'chat', icon: 'icon-chat', title: 'assistants.title' },
-        { id: 'agents', icon: 'icon-business-smart-assistant', title: 'agents.title' },
-        { id: 'paintings', icon: 'icon-picture', title: 'paintings.title' },
-        { id: 'translate', icon: 'icon-translate', title: 'translate.title' },
-        { id: 'minapp', icon: 'icon-appstore', title: 'minapp.title' },
-        { id: 'knowledge', icon: 'icon-search', title: 'knowledge_base.title' },
-        { id: 'files', icon: 'icon-folder', title: 'files.title' }
-      ],
+      visible: DEFAULT_SIDEBAR_ICONS,
       disabled: []
     }
     return state

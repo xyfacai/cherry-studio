@@ -40,7 +40,7 @@ const Sidebar: FC = () => {
   const renderMainMenus = () => {
     return sidebarIcons.visible.map((icon) => {
       const iconMap = {
-        chat: <i className="iconfont icon-chat" />,
+        assistants: <i className="iconfont icon-chat" />,
         agents: <i className="iconfont icon-business-smart-assistant" />,
         paintings: <PictureOutlined style={{ fontSize: 16 }} />,
         translate: <TranslationOutlined />,
@@ -50,7 +50,7 @@ const Sidebar: FC = () => {
       }
 
       const pathMap = {
-        chat: '/',
+        assistants: '/',
         agents: '/agents',
         paintings: '/paintings',
         translate: '/translate',
@@ -59,13 +59,13 @@ const Sidebar: FC = () => {
         files: '/files'
       }
 
-      const path = pathMap[icon.id]
+      const path = pathMap[icon]
       const isActive = path === '/' ? isRoute(path) : isRoutes(path)
 
       return (
-        <Tooltip key={icon.id} title={t(icon.title)} mouseEnterDelay={0.8} placement="right">
+        <Tooltip key={icon} title={t(`${icon}.title`)} mouseEnterDelay={0.8} placement="right">
           <StyledLink onClick={() => to(path)}>
-            <Icon className={isActive}>{iconMap[icon.id]}</Icon>
+            <Icon className={isActive}>{iconMap[icon]}</Icon>
           </StyledLink>
         </Tooltip>
       )
