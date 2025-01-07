@@ -776,7 +776,7 @@ const migrateConfig = {
     state.settings.topicNamingPrompt = ''
     return state
   },
-  '52': (state: RootState) => {
+  '53': (state: RootState) => {
     if (state.shortcuts) {
       state.shortcuts.shortcuts.push({
         key: 'search_message',
@@ -786,12 +786,6 @@ const migrateConfig = {
         system: false
       })
     }
-    state.settings.showTranslateIcon = true
-    state.settings.showPaintingIcon = true
-    state.settings.showKnowledgeIcon = true
-    return state
-  },
-  '53': (state: RootState) => {
     state.settings.sidebarIcons = {
       visible: [
         { id: 'chat', icon: 'icon-chat', title: 'assistants.title' },
