@@ -193,9 +193,6 @@ const AssistantItem = styled.div`
   }
   &.active {
     background-color: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
-    .name {
-    }
   }
 `
 

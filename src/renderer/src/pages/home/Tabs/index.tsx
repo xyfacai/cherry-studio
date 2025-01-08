@@ -98,14 +98,7 @@ const HomeTabs: FC<Props> = ({ activeAssistant, activeTopic, setActiveAssistant,
       {showTab && (
         <Segmented
           value={tab}
-          style={{
-            borderRadius: 0,
-            padding: '10px 0',
-            margin: '0 10px',
-            paddingBottom: 10,
-            borderBottom: '0.5px solid var(--color-border)',
-            gap: 2
-          }}
+          style={{ padding: '10px 0', margin: '0 10px', paddingBottom: 0, gap: 2 }}
           options={
             [
               position === 'left' && topicPosition === 'left' ? assistantTab : undefined,
@@ -148,7 +141,7 @@ const Container = styled.div`
   flex-direction: column;
   max-width: var(--assistants-width);
   min-width: var(--assistants-width);
-  height: calc(100vh - var(--navbar-height));
+  height: calc(100vh - 10px);
   background-color: var(--color-background);
   overflow: hidden;
   .collapsed {
@@ -176,7 +169,6 @@ const Segmented = styled(AntSegmented)`
   }
   .ant-segmented-item-selected {
     background-color: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
     transition: none !important;
   }
   .ant-segmented-item-label {
@@ -203,7 +195,6 @@ const Segmented = styled(AntSegmented)`
   .ant-segmented-thumb {
     transition: none !important;
     background-color: var(--color-background-soft);
-    border: 0.5px solid var(--color-border);
   }
 `
 

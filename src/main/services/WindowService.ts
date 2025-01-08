@@ -52,7 +52,7 @@ export class WindowService {
       titleBarStyle: isLinux ? 'default' : 'hidden',
       titleBarOverlay: theme === 'dark' ? titleBarOverlayDark : titleBarOverlayLight,
       backgroundColor: isMac ? undefined : theme === 'dark' ? '#181818' : '#FFFFFF',
-      trafficLightPosition: { x: 8, y: 12 },
+      trafficLightPosition: { x: 5, y: 12 },
       ...(process.platform === 'linux' ? { icon } : {}),
       webPreferences: {
         preload: join(__dirname, '../preload/index.js'),

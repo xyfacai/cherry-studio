@@ -50,12 +50,13 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   height: 100%;
+  width: 100%;
   flex: 1;
   justify-content: space-between;
 `
 
 const Main = styled(Flex)`
-  height: calc(100vh - var(--navbar-height));
+  height: calc(100vh - var(--navbar-height) - 10px);
 `
 
 export default Chat

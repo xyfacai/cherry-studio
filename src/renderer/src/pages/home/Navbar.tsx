@@ -1,9 +1,8 @@
 import { FormOutlined, SearchOutlined } from '@ant-design/icons'
-import { Navbar, NavbarLeft, NavbarRight } from '@renderer/components/app/Navbar'
+import { Navbar } from '@renderer/components/app/Navbar'
 import { HStack } from '@renderer/components/Layout'
 import AppStorePopover from '@renderer/components/Popups/AppStorePopover'
 import SearchPopup from '@renderer/components/Popups/SearchPopup'
-import { isMac, isWindows } from '@renderer/config/constant'
 import { useAssistant } from '@renderer/hooks/useAssistant'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { useShortcut } from '@renderer/hooks/useShortcuts'
@@ -49,54 +48,47 @@ const HeaderNavbar: FC<Props> = ({ activeAssistant }) => {
 
   return (
     <Navbar className="home-navbar">
-      {showAssistants && (
-        <NavbarLeft style={{ justifyContent: 'space-between', borderRight: 'none', padding: 0 }}>
-          <NavbarIcon onClick={toggleShowAssistants} style={{ marginLeft: isMac ? 16 : 0 }}>
+      <HStack alignItems="center" gap={8}>
+        {showAssistants ? (
+          <NavbarIcon onClick={toggleShowAssistants}>
             <i className="iconfont icon-hide-sidebar" />
           </NavbarIcon>
-          <NavbarIcon onClick={() => EventEmitter.emit(EVENT_NAMES.ADD_NEW_TOPIC)}>
-            <FormOutlined />
+        ) : (
+          <NavbarIcon onClick={() => toggleShowAssistants()}>
+            <i className="iconfont icon-show-sidebar" />
           </NavbarIcon>
-        </NavbarLeft>
-      )}
-      <NavbarRight
-        style={{ justifyContent: 'space-between', paddingRight: isWindows ? 140 : 12, flex: 1 }}
-        className="home-navbar-right">
-        <HStack alignItems="center">
-          {!showAssistants && (
-            <NavbarIcon onClick={() => toggleShowAssistants()} style={{ marginRight: 8, marginLeft: isMac ? 4 : -12 }}>
-              <i className="iconfont icon-show-sidebar" />
-            </NavbarIcon>
-          )}
-          <TitleText
-            style={{ marginRight: 10, cursor: 'pointer' }}
-            className="nodrag"
-            onClick={() => AssistantSettingsPopup.show({ assistant })}>
-            {assistant.name}
-          </TitleText>
-          <SelectModelButton assistant={assistant} />
-        </HStack>
-        <HStack alignItems="center" gap={8}>
-          <NarrowIcon onClick={() => SearchPopup.show()}>
-            <SearchOutlined />
-          </NarrowIcon>
-          <NarrowIcon onClick={() => dispatch(setNarrowMode(!narrowMode))}>
-            <i className="iconfont icon-icon-adaptive-width"></i>
-          </NarrowIcon>
-          {sidebarIcons.visible.includes('minapp') && (
-            <AppStorePopover>
-              <NarrowIcon>
-                <i className="iconfont icon-appstore" />
-              </NarrowIcon>
-            </AppStorePopover>
-          )}
-          {topicPosition === 'right' && (
-            <NarrowIcon onClick={toggleShowTopics}>
-              <i className={`iconfont icon-${showTopics ? 'show' : 'hide'}-sidebar`} />
+        )}
+        <TitleText
+          style={{ marginRight: 10, cursor: 'pointer' }}
+          className="nodrag"
+          onClick={() => AssistantSettingsPopup.show({ assistant })}>
+          {assistant.name}
+        </TitleText>
+        <SelectModelButton assistant={assistant} />
+      </HStack>
+      <HStack alignItems="center" gap={8}>
+        <NavbarIcon onClick={() => EventEmitter.emit(EVENT_NAMES.ADD_NEW_TOPIC)}>
+          <FormOutlined />
+        </NavbarIcon>
+        <NarrowIcon onClick={() => SearchPopup.show()}>
+          <SearchOutlined />
+        </NarrowIcon>
+        <NarrowIcon onClick={() => dispatch(setNarrowMode(!narrowMode))}>
+          <i className="iconfont icon-icon-adaptive-width"></i>
+        </NarrowIcon>
+        {sidebarIcons.visible.includes('minapp') && (
+          <AppStorePopover>
+            <NarrowIcon>
+              <i className="iconfont icon-appstore" />
             </NarrowIcon>
-          )}
-        </HStack>
-      </NavbarRight>
+          </AppStorePopover>
+        )}
+        {topicPosition === 'right' && (
+          <NarrowIcon onClick={toggleShowTopics}>
+            <i className={`iconfont icon-${showTopics ? 'show' : 'hide'}-sidebar`} />
+          </NarrowIcon>
+        )}
+      </HStack>
     </Navbar>
   )
 }

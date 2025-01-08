@@ -1,18 +1,12 @@
-import { isMac } from '@renderer/config/constant'
-import { useSettings } from '@renderer/hooks/useSettings'
+import { isMac, isWindows } from '@renderer/config/constant'
 import { FC, PropsWithChildren } from 'react'
 import styled from 'styled-components'
 
 type Props = PropsWithChildren & JSX.IntrinsicElements['div']
 
 export const Navbar: FC<Props> = ({ children, ...props }) => {
-  const { windowStyle } = useSettings()
-
-  const macTransparentWindow = isMac && windowStyle === 'transparent'
-  const backgroundColor = macTransparentWindow ? 'transparent' : 'var(--navbar-background)'
-
   return (
-    <NavbarContainer {...props} style={{ backgroundColor }}>
+    <NavbarContainer {...props} style={{ paddingRight: isWindows ? 140 : 12 }}>
       {children}
     </NavbarContainer>
   )
@@ -34,11 +28,12 @@ const NavbarContainer = styled.div`
   min-width: 100%;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   min-height: var(--navbar-height);
   max-height: var(--navbar-height);
-  margin-left: ${isMac ? 'calc(var(--sidebar-width) * -1)' : 0};
-  padding-left: ${isMac ? 'var(--sidebar-width)' : 0};
   -webkit-app-region: drag;
+  padding: 0 ${isMac ? '20px' : '15px'};
+  font-weight: bold;
 `
 
 const NavbarLeftContainer = styled.div`

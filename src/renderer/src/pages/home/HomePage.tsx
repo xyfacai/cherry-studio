@@ -1,3 +1,4 @@
+import { HStack, VStack } from '@renderer/components/Layout'
 import { useAssistants } from '@renderer/hooks/useAssistant'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { useActiveTopic } from '@renderer/hooks/useTopic'
@@ -46,23 +47,27 @@ const HomePage: FC = () => {
 
   return (
     <Container id="home-page">
-      <Navbar activeAssistant={activeAssistant} activeTopic={activeTopic} setActiveTopic={setActiveTopic} />
       <ContentContainer id="content-container">
-        {showAssistants && (
-          <HomeTabs
-            activeAssistant={activeAssistant}
-            activeTopic={activeTopic}
-            setActiveAssistant={setActiveAssistant}
-            setActiveTopic={setActiveTopic}
-            position="left"
-          />
-        )}
-        <Chat
-          assistant={activeAssistant}
-          activeTopic={activeTopic}
-          setActiveTopic={setActiveTopic}
-          setActiveAssistant={setActiveAssistant}
-        />
+        <HStack>
+          {showAssistants && (
+            <HomeTabs
+              activeAssistant={activeAssistant}
+              activeTopic={activeTopic}
+              setActiveAssistant={setActiveAssistant}
+              setActiveTopic={setActiveTopic}
+              position="left"
+            />
+          )}
+          <VStack style={{ flex: 1 }}>
+            <Navbar activeAssistant={activeAssistant} activeTopic={activeTopic} setActiveTopic={setActiveTopic} />
+            <Chat
+              assistant={activeAssistant}
+              activeTopic={activeTopic}
+              setActiveTopic={setActiveTopic}
+              setActiveAssistant={setActiveAssistant}
+            />
+          </VStack>
+        </HStack>
       </ContentContainer>
     </Container>
   )
@@ -78,7 +83,7 @@ const Container = styled.div`
 const ContentContainer = styled.div`
   display: flex;
   flex: 1;
-  flex-direction: row;
+  flex-direction: column;
   overflow: hidden;
 `
 

@@ -48,7 +48,7 @@
   --navbar-background: rgba(30, 30, 30);
 
   --navbar-height: 40px;
-  --sidebar-width: 50px;
+  --sidebar-width: 64px;
   --status-bar-height: 40px;
   --input-bar-height: 100px;
 
@@ -61,7 +61,7 @@
   --chat-background-assistant: #2c2c2c;
   --chat-text-user: var(--color-black);
 
-  --list-item-border-radius: 16px;
+  --list-item-border-radius: 8px;
 }
 
 body[theme-mode='light'] {
@@ -105,7 +105,7 @@ body[theme-mode='light'] {
   --color-reference-background: #f1f7ff;
 
   --navbar-background-mac: rgba(255, 255, 255, 0.6);
-  --navbar-background: rgba(255, 255, 255);
+  --navbar-background: rgba(248, 248, 248);
 
   --chat-background: #f3f3f3;
   --chat-background-user: #95ec69;
@@ -170,10 +170,10 @@ body,
 
 #content-container {
   background-color: var(--color-background);
-  border-top: 0.5px solid var(--color-border);
-  border-top-left-radius: 12px;
-  border-left: 0.5px solid var(--color-border);
-  box-shadow: -2px 0px 20px -4px rgba(0, 0, 0, 0.06);
+  margin: 8px;
+  margin-left: 0;
+  border-radius: 8px;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.01);
 }
 
 .loader {
