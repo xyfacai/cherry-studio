@@ -63,11 +63,10 @@ const Sidebar: FC = () => {
       const isActive = path === '/' ? isRoute(path) : isRoutes(path)
 
       return (
-        <Tooltip key={icon} title={t(`${icon}.title`)} mouseEnterDelay={0.8} placement="right">
-          <StyledLink onClick={() => to(path)}>
-            <Icon className={isActive}>{iconMap[icon]}</Icon>
-          </StyledLink>
-        </Tooltip>
+        <StyledLink key={icon} onClick={() => to(path)}>
+          <Icon className={isActive}>{iconMap[icon]}</Icon>
+          <Title>{t(`${icon}.title`)}</Title>
+        </StyledLink>
       )
     })
   }
@@ -144,7 +143,6 @@ const Icon = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  margin-bottom: 5px;
   -webkit-app-region: none;
   border: 0.5px solid transparent;
   .iconfont,
@@ -177,9 +175,19 @@ const Icon = styled.div`
 const StyledLink = styled.div`
   text-decoration: none;
   -webkit-app-region: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
   &* {
     user-select: none;
   }
+`
+
+const Title = styled.span`
+  font-size: 10px;
+  color: var(--color-text);
+  text-align: center;
 `
 
 export default Sidebar

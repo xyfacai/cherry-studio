@@ -182,14 +182,14 @@ const FilesPage: FC = () => {
 
   return (
     <Container>
-      <Navbar>
-        <NavbarCenter style={{ borderRight: 'none' }}>{t('files.title')}</NavbarCenter>
-      </Navbar>
       <ContentContainer id="content-container">
         <SideNav>
           <Menu selectedKeys={[fileType]} items={menuItems} onSelect={({ key }) => setFileType(key as FileTypes)} />
         </SideNav>
         <TableContainer right>
+          <Navbar>
+            <NavbarCenter style={{ borderRight: 'none' }}>{t('files.title')}</NavbarCenter>
+          </Navbar>
           <ContentView id={fileType} files={files} dataSource={dataSource} columns={columns} />
         </TableContainer>
       </ContentContainer>
@@ -201,7 +201,7 @@ const Container = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  height: calc(100vh - var(--navbar-height));
+  height: calc(100vh - 16px);
 `
 
 const ContentContainer = styled.div`
