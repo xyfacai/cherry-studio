@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { getAllMinApps } from '@renderer/config/minapps'
 import { TRANSLATE_PROMPT } from '@renderer/config/prompts'
 import { CodeStyleVarious, LanguageVarious, ThemeMode } from '@renderer/types'
 
@@ -15,6 +16,11 @@ export const DEFAULT_SIDEBAR_ICONS: SidebarIcon[] = [
   'knowledge',
   'files'
 ]
+const [minApps] = await Promise.all([getAllMinApps()])
+
+export type MinAppIcon = (typeof minApps)[number]['id'] // 假设每个小程序对象有 type 字段
+
+export const DEFAULT_MINIAPP_ICONS: MinAppIcon[] = minApps.map((app) => app.id)
 
 export interface SettingsState {
   showAssistants: boolean
@@ -60,6 +66,11 @@ export interface SettingsState {
     visible: SidebarIcon[]
     disabled: SidebarIcon[]
   }
+  miniAppIcons: {
+    visible: MinAppIcon[]
+    disabled: MinAppIcon[]
+    pinned: MinAppIcon[]
+  }
 }
 
 const initialState: SettingsState = {
@@ -103,6 +114,11 @@ const initialState: SettingsState = {
   sidebarIcons: {
     visible: DEFAULT_SIDEBAR_ICONS,
     disabled: []
+  },
+  miniAppIcons: {
+    visible: DEFAULT_MINIAPP_ICONS,
+    disabled: [],
+    pinned: []
   }
 }
 
@@ -230,6 +246,9 @@ const settingsSlice = createSlice({
     },
     setSidebarIcons: (state, action: PayloadAction<{ visible: SidebarIcon[]; disabled: SidebarIcon[] }>) => {
       state.sidebarIcons = action.payload
+    },
+    setMiniAppIcons: (state, action: PayloadAction<{ visible: MinAppIcon[]; disabled: MinAppIcon[]; pinned: MinAppIcon[] }>) => {
+      state.miniAppIcons = action.payload
     }
   }
 })
@@ -274,7 +293,8 @@ export const {
   setPasteLongTextThreshold,
   setCustomCss,
   setTopicNamingPrompt,
-  setSidebarIcons
+  setSidebarIcons,
+  setMiniAppIcons
 } = settingsSlice.actions
 
 export default settingsSlice.reducer
