@@ -247,7 +247,10 @@ const settingsSlice = createSlice({
     setSidebarIcons: (state, action: PayloadAction<{ visible: SidebarIcon[]; disabled: SidebarIcon[] }>) => {
       state.sidebarIcons = action.payload
     },
-    setMiniAppIcons: (state, action: PayloadAction<{ visible: MinAppIcon[]; disabled: MinAppIcon[]; pinned: MinAppIcon[] }>) => {
+    setMiniAppIcons: (
+      state,
+      action: PayloadAction<{ visible: MinAppIcon[]; disabled: MinAppIcon[]; pinned: MinAppIcon[] }>
+    ) => {
       state.miniAppIcons = action.payload
     }
   }
