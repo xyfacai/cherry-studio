@@ -1,5 +1,6 @@
 import store from '@renderer/store'
 import { setMinappBrowserVisible } from '@renderer/store/runtime'
+import { MinAppType } from '@renderer/types'
 import * as React from 'react'
 
 import { TopView } from '../TopView'
@@ -28,7 +29,7 @@ export default class MinApp {
     }
   }
 
-  static async start() {
+  static async start(app: MinAppType) {
     try {
       const state = store.getState()
       const { browserVisible } = state.runtime.minapp
@@ -53,9 +54,7 @@ export default class MinApp {
             this.retryCount++
             console.warn(`Retrying MinApp start (attempt ${this.retryCount}/${this.maxRetries})...`)
             setTimeout(() => {
-              this.start()
-                .then(resolve)
-                .catch(reject)
+              this.start(app).then(resolve).catch(reject)
             }, this.retryDelay)
           } else {
             console.error('Max retry attempts reached for MinApp start')

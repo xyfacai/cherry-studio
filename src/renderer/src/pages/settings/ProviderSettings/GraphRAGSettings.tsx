@@ -1,6 +1,6 @@
 import MinApp from '@renderer/components/MinApp'
-import { Provider } from '@renderer/types'
-import { Button, message } from 'antd'
+import { MinAppType, Provider } from '@renderer/types'
+import { Button } from 'antd'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -12,17 +12,21 @@ interface Props {
 }
 
 const GraphRAGSettings: FC<Props> = ({ provider }) => {
+  const apiUrl = provider.apiHost
   const modalId = provider.models.filter((model) => model.id.includes('global'))[0]?.id
   const { t } = useTranslation()
 
   const onShowGraphRAG = async () => {
-    try {
-      await window.api.getAppInfo()
-      await MinApp.start()
-    } catch (error) {
-      console.error('Failed to show GraphRAG:', error)
-      message.error(t('errors.operationFailed'))
+    const { appPath } = await window.api.getAppInfo()
+    const url = `file://${appPath}/resources/graphrag.html?apiUrl=${apiUrl}&modelId=${modalId}`
+
+    const app: MinAppType = {
+      name: t('words.knowledgeGraph'),
+      logo: '',
+      url
     }
+
+    MinApp.start(app)
   }
 
   if (!modalId) {

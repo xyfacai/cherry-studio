@@ -47,7 +47,11 @@ const Sidebar: FC = () => {
     // 如果点击了小程序标签且小程序当前隐藏
     if (path === '/apps' && !minappShow) {
       store.dispatch(setMinappShow(true))
-      MinApp.start() // 直接启动MinAppBrowser
+      MinApp.start({
+        name: 'default',
+        logo: '',
+        url: ''
+      })
     }
 
     navigate(path)

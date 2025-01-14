@@ -140,6 +140,7 @@ export type MinAppType = {
   logo: string
   url: string
   bodered?: boolean
+  background?: string
 }
 
 export interface FileType {
@@ -169,7 +170,9 @@ export enum ThemeMode {
   dark = 'dark',
   auto = 'auto'
 }
+
 export type LanguageVarious = 'zh-CN' | 'zh-TW' | 'en-US' | 'ru-RU' | 'ja-JP'
+
 export type CodeStyleVarious = BuiltinTheme | 'auto'
 
 export type WebDavConfig = {
@@ -247,3 +250,5 @@ export type GenerateImageParams = {
   signal?: AbortSignal
   promptEnhancement?: boolean
 }
+
+export type SidebarIcon = 'assistants' | 'agents' | 'paintings' | 'translate' | 'minapp' | 'knowledge' | 'files'

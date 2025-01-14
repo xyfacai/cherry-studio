@@ -36,7 +36,7 @@ import SiliconFlowProviderLogo from '@renderer/assets/images/providers/silicon.p
 import MinApp from '@renderer/components/MinApp'
 import { MinAppType } from '@renderer/types'
 
-const _apps: MinAppType[] = [
+export const DEFAULT_MIN_APPS: MinAppType[] = [
   {
     id: 'openai',
     name: 'ChatGPT',
@@ -265,10 +265,10 @@ const _apps: MinAppType[] = [
 ]
 
 export function getAllMinApps() {
-  return _apps as MinAppType[]
+  return DEFAULT_MIN_APPS as MinAppType[]
 }
 
 export function startMinAppById(id: string) {
-  const app = _apps.find((app) => app.id === id)
-  app && MinApp.start()
+  const app = DEFAULT_MIN_APPS.find((app) => app.id === id)
+  app && MinApp.start(app)
 }
