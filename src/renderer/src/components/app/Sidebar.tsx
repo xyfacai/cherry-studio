@@ -19,6 +19,7 @@ import DragableList from '../DragableList'
 import MinAppIcon from '../Icons/MinAppIcon'
 import MinApp from '../MinApp'
 import UserPopup from '../Popups/UserPopup'
+import MinAppLogo from '@renderer/components/Icons/MinAppLogo'
 
 const Sidebar: FC = () => {
   const { pathname } = useLocation()
@@ -150,7 +151,7 @@ const PinnedApps: FC = () => {
             <StyledLink>
               <Dropdown menu={{ items: menuItems }} trigger={['contextMenu']}>
                 <Icon onClick={() => MinApp.start(app)}>
-                  <MinAppIcon size={20} app={app} style={{ borderRadius: 6 }} />
+                  <MinAppLogo name={app.name} logo={app.logo} size={25} />
                 </Icon>
               </Dropdown>
             </StyledLink>

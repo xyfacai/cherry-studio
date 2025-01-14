@@ -7,9 +7,11 @@ import {
   DroppableProvided,
   DropResult
 } from '@hello-pangea/dnd'
+import MinAppLogo from '@renderer/components/Icons/MinAppLogo'
 import { DEFAULT_MIN_APPS } from '@renderer/config/minapps'
 import { useMinapps } from '@renderer/hooks/useMinapps'
 import { MinAppType } from '@renderer/types'
+import { message } from 'antd'
 import { FC, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -74,7 +76,14 @@ const MiniAppIconsManager: FC<MiniAppManagerProps> = ({
   setDisabledMiniApps
 }) => {
   const { t } = useTranslation()
-  const { pinned, updateMinapps, updateDisabledMinapps, updatePinnedMinapps } = useMinapps()
+  const { pinned, custom, updateMinapps, updateDisabledMinapps, updatePinnedMinapps } = useMinapps()
+
+  const allVisibleApps = [
+    ...visibleMiniApps,
+    ...(custom || []).filter(
+      (c) => !visibleMiniApps.some((m) => m.id === c.id) && !disabledMiniApps.some((d) => d.id === c.id)
+    )
+  ]
 
   const handleListUpdate = useCallback(
     (newVisible: MinAppType[], newDisabled: MinAppType[]) => {
@@ -95,26 +104,50 @@ const MiniAppIconsManager: FC<MiniAppManagerProps> = ({
       const sourceList = source.droppableId as ListType
       const destList = destination.droppableId as ListType
 
-      if (source.droppableId === destination.droppableId) return
+      // 如果是从 visible 拖到 disabled，检查是否是 pinned
+      if (sourceList === 'visible' && destList === 'disabled') {
+        const program = visibleMiniApps[source.index]
+        const isPinned = pinned.some((p) => p.id === program.id)
+        if (isPinned) {
+          message.error(t('settings.display.minApp.pinnedError'))
+          return
+        }
+      }
 
       const newLists = reorderLists({
-        sourceList: sourceList === 'visible' ? visibleMiniApps : disabledMiniApps,
-        destList: destList === 'visible' ? visibleMiniApps : disabledMiniApps,
+        sourceList: sourceList === 'visible' ? allVisibleApps : disabledMiniApps,
+        destList: destList === 'visible' ? allVisibleApps : disabledMiniApps,
         sourceIndex: source.index,
         destIndex: destination.index,
         isSameList: sourceList === destList
       })
 
-      handleListUpdate(
-        sourceList === 'visible' ? newLists.sourceList : newLists.destList,
-        sourceList === 'visible' ? newLists.destList : newLists.sourceList
-      )
+      // 更新状态时保持顺序
+      if (sourceList === destList) {
+        if (sourceList === 'visible') {
+          handleListUpdate(newLists.sourceList, disabledMiniApps)
+        } else {
+          handleListUpdate(visibleMiniApps, newLists.sourceList)
+        }
+      } else {
+        handleListUpdate(
+          sourceList === 'visible' ? newLists.sourceList : newLists.destList,
+          sourceList === 'visible' ? newLists.destList : newLists.sourceList
+        )
+      }
     },
-    [disabledMiniApps, handleListUpdate, visibleMiniApps]
+    [disabledMiniApps, handleListUpdate, visibleMiniApps, pinned, t, allVisibleApps]
   )
 
   const onMoveMiniApp = useCallback(
     (program: MinAppType, fromList: ListType) => {
+      // 如果是 pinned 的小程序，不允许设置为 disabled
+      const isPinned = pinned.some((p) => p.id === program.id)
+      if (fromList === 'visible' && isPinned) {
+        message.error(t('settings.display.minApp.pinnedError'))
+        return
+      }
+
       const isMovingToVisible = fromList === 'disabled'
       const newVisible = isMovingToVisible
         ? [...visibleMiniApps, program]
@@ -125,21 +158,24 @@ const MiniAppIconsManager: FC<MiniAppManagerProps> = ({
 
       handleListUpdate(newVisible, newDisabled)
     },
-    [visibleMiniApps, disabledMiniApps, handleListUpdate]
+    [visibleMiniApps, disabledMiniApps, handleListUpdate, pinned, t]
   )
 
   const renderProgramItem = (program: MinAppType, provided: DraggableProvided, listType: ListType) => {
     const { name, logo } = DEFAULT_MIN_APPS.find((app) => app.id === program.id) || { name: program.name, logo: '' }
+    const isPinned = pinned.some((p) => p.id === program.id)
 
     return (
       <ProgramItem ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
         <ProgramContent>
-          <AppLogo src={logo} alt={name} />
+          <MinAppLogo name={name} logo={logo} size={16} />
           <span>{name}</span>
         </ProgramContent>
-        <CloseButton onClick={() => onMoveMiniApp(program, listType)}>
-          <CloseOutlined />
-        </CloseButton>
+        {!isPinned && (
+          <CloseButton onClick={() => onMoveMiniApp(program, listType)}>
+            <CloseOutlined />
+          </CloseButton>
+        )}
       </ProgramItem>
     )
   }
@@ -154,7 +190,7 @@ const MiniAppIconsManager: FC<MiniAppManagerProps> = ({
               {(provided: DroppableProvided) => (
                 <ProgramList ref={provided.innerRef} {...provided.droppableProps}>
                   <ScrollContainer>
-                    {(listType === 'visible' ? visibleMiniApps : disabledMiniApps).map((program, index) => (
+                    {(listType === 'visible' ? allVisibleApps : disabledMiniApps).map((program, index) => (
                       <Draggable key={program.id} draggableId={String(program.id)} index={index}>
                         {(provided: DraggableProvided) => renderProgramItem(program, provided, listType)}
                       </Draggable>
@@ -173,13 +209,6 @@ const MiniAppIconsManager: FC<MiniAppManagerProps> = ({
     </DragDropContext>
   )
 }
-
-const AppLogo = styled.img`
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  object-fit: contain;
-`
 
 const ScrollContainer = styled.div`
   overflow-y: auto;
@@ -233,11 +262,6 @@ const ProgramContent = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-
-  .iconfont {
-    font-size: 16px;
-    color: var(--color-text);
-  }
 
   span {
     color: var(--color-text);

@@ -128,13 +128,13 @@ export interface Painting {
   promptEnhancement?: boolean
 }
 
-export type MinAppType = {
-  id?: string | number
+export interface MinAppType {
+  id: string
   name: string
-  logo: string
   url: string
-  bodered?: boolean
-  background?: string
+  type: 'default' | 'custom'
+  bordered?: boolean
+  logo?: string
 }
 
 export interface FileType {

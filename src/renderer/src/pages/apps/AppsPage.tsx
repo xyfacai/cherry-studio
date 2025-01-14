@@ -1,27 +1,36 @@
-import { SearchOutlined } from '@ant-design/icons'
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import { Navbar, NavbarCenter } from '@renderer/components/app/Navbar'
 import { Center } from '@renderer/components/Layout'
 import { useMinapps } from '@renderer/hooks/useMinapps'
-import { Empty, Input } from 'antd'
+import { Empty, Input, message } from 'antd'
 import { isEmpty } from 'lodash'
 import React, { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
+import AddAppPopup from './AddAppPopup'
 import App from './App'
 
 const AppsPage: FC = () => {
   const { t } = useTranslation()
   const [search, setSearch] = useState('')
-  const { minapps } = useMinapps()
+  const { minapps, custom, disabled } = useMinapps()
 
-  console.debug('minapps', minapps)
+  // 修改过滤逻辑，确保不会出现重复数据
+  const allApps = [
+    ...minapps,
+    ...(custom || []).filter(
+      (c) =>
+        // 确保自定义应用不在 minapps 中且不在禁用列表中
+        !minapps.some((m) => m.id === c.id) && !disabled.some((d) => d.id === c.id)
+    )
+  ]
 
   const filteredApps = search
-    ? minapps.filter(
+    ? allApps.filter(
         (app) => app.name.toLowerCase().includes(search.toLowerCase()) || app.url.includes(search.toLowerCase())
       )
-    : minapps
+    : allApps
 
   // Calculate the required number of lines
   const itemsPerRow = Math.floor(930 / 115) // Maximum width divided by the width of each item (including spacing)
@@ -32,6 +41,13 @@ const AppsPage: FC = () => {
   // Disable right-click menu in blank area
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault()
+  }
+
+  const handleAddMinApp = async () => {
+    const result = await AddAppPopup.show()
+    if (result) {
+      message.success(t('minapp.add.success'))
+    }
   }
 
   return (
@@ -57,6 +73,10 @@ const AppsPage: FC = () => {
           {filteredApps.map((app) => (
             <App key={app.id} app={app} />
           ))}
+          <AddAppButton onClick={handleAddMinApp}>
+            <PlusOutlined style={{ fontSize: '24px' }} />
+            <div>{t('minapp.add.title')}</div>
+          </AddAppButton>
           {isEmpty(filteredApps) && (
             <Center style={{ flex: 1 }}>
               <Empty />
@@ -93,6 +113,23 @@ const AppsContainer = styled.div`
   grid-template-columns: repeat(auto-fill, 90px);
   gap: 25px;
   justify-content: center;
+`
+
+const AddAppButton = styled.div`
+  width: 90px;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px dashed #d9d9d9;
+  border-radius: 8px;
+
+  &:hover {
+    border-color: #40a9ff;
+    color: #40a9ff;
+  }
 `
 
 export default AppsPage

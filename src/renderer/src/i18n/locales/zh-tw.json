@@ -266,7 +266,18 @@
     "minapp": {
       "title": "小程序",
       "sidebar.add.title": "添加到側邊欄",
-      "sidebar.remove.title": "從側邊欄移除"
+      "sidebar.remove.title": "從側邊欄移除",
+      "add.title": "添加小程序",
+      "add.name": "名稱",
+      "add.name.placeholder": "請輸入小程序名稱",
+      "add.name.required": "請輸入小程序名稱",
+      "add.url": "地址",
+      "add.url.placeholder": "請輸入小程序地址",
+      "add.url.required": "請輸入小程序地址",
+      "add.logo": "圖標地址",
+      "add.logo.placeholder": "請輸入圖標地址（可選）",
+      "add.success": "成功添加小程序",
+      "delete.success": "成功刪除小程序"
     },
     "ollama": {
       "keep_alive_time.description": "對話後模型在記憶體中保持的時間（預設為 5 分鐘）。",

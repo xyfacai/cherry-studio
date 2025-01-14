@@ -266,7 +266,18 @@
     "minapp": {
       "title": "MinApp",
       "sidebar.add.title": "Add to sidebar",
-      "sidebar.remove.title": "Remove from sidebar"
+      "sidebar.remove.title": "Remove from sidebar",
+      "add.title": "Add MinApp",
+      "add.name": "Name",
+      "add.name.placeholder": "Please enter the MinApp name",
+      "add.name.required": "Please enter the MinApp name",
+      "add.url": "URL",
+      "add.url.placeholder": "Please enter the MinApp URL",
+      "add.url.required": "Please enter the MinApp URL",
+      "add.logo": "Icon URL",
+      "add.logo.placeholder": "Please enter the icon URL (optional)",
+      "add.success": "MinApp added successfully",
+      "delete.success": "MinApp deleted successfully"
     },
     "ollama": {
       "keep_alive_time.description": "The time in minutes to keep the connection alive, default is 5 minutes.",

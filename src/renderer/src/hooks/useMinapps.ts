@@ -1,15 +1,16 @@
 import { RootState, useAppDispatch, useAppSelector } from '@renderer/store'
-import { setDisabledMinApps, setMinApps, setPinnedMinApps } from '@renderer/store/minapps'
+import { setCustomMinApps, setDisabledMinApps, setMinApps, setPinnedMinApps } from '@renderer/store/minapps'
 import { MinAppType } from '@renderer/types'
 
 export const useMinapps = () => {
-  const { enabled, disabled, pinned } = useAppSelector((state: RootState) => state.minapps)
+  const { enabled, disabled, pinned, custom } = useAppSelector((state: RootState) => state.minapps)
   const dispatch = useAppDispatch()
 
   return {
     minapps: enabled,
     disabled,
     pinned,
+    custom,
     updateMinapps: (minapps: MinAppType[]) => {
       dispatch(setMinApps(minapps))
     },
@@ -18,6 +19,9 @@ export const useMinapps = () => {
     },
     updatePinnedMinapps: (minapps: MinAppType[]) => {
       dispatch(setPinnedMinApps(minapps))
+    },
+    updateCustomMinapps: (minapps: MinAppType[]) => {
+      dispatch(setCustomMinApps(minapps))
     }
   }
 }

@@ -16,12 +16,14 @@ export interface MinAppsState {
   enabled: MinAppType[]
   disabled: MinAppType[]
   pinned: MinAppType[]
+  custom: MinAppType[]
 }
 
 const initialState: MinAppsState = {
   enabled: DEFAULT_MIN_APPS,
   disabled: [],
-  pinned: []
+  pinned: [],
+  custom: []
 }
 
 const minAppsSlice = createSlice({
@@ -39,10 +41,13 @@ const minAppsSlice = createSlice({
     },
     setPinnedMinApps: (state, action: PayloadAction<MinAppType[]>) => {
       state.pinned = action.payload
+    },
+    setCustomMinApps: (state, action: PayloadAction<MinAppType[]>) => {
+      state.custom = action.payload
     }
   }
 })
 
-export const { setMinApps, addMinApp, setDisabledMinApps, setPinnedMinApps } = minAppsSlice.actions
+export const { setMinApps, addMinApp, setDisabledMinApps, setPinnedMinApps, setCustomMinApps } = minAppsSlice.actions
 
 export default minAppsSlice.reducer

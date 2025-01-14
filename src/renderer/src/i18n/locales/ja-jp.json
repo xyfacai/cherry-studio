@@ -264,7 +264,18 @@
     "minapp": {
       "title": "ミニアプリ",
       "sidebar.add.title": "サイドバーに追加",
-      "sidebar.remove.title": "サイドバーから削除"
+      "sidebar.remove.title": "サイドバーから削除",
+      "add.title": "アプリを追加",
+      "add.name": "名前",
+      "add.name.placeholder": "アプリの名前を入力してください",
+      "add.name.required": "アプリの名前を入力してください",
+      "add.url": "アドレス",
+      "add.url.placeholder": "アプリのアドレスを入力してください",
+      "add.url.required": "アプリのアドレスを入力してください",
+      "add.logo": "アイコンアドレス",
+      "add.logo.placeholder": "アイコンアドレスを入力してください（オプション）",
+      "add.success": "アプリの追加に成功しました",
+      "delete.success": "アプリの削除に成功しました"
     },
     "ollama": {
       "keep_alive_time.description": "モデルがメモリに保持される時間（デフォルト：5分）",

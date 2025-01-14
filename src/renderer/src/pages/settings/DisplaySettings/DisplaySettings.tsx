@@ -34,7 +34,7 @@ const DisplaySettings: FC = () => {
     customCss,
     sidebarIcons
   } = useSettings()
-  const { minapps, disabled, updateMinapps, updateDisabledMinapps } = useMinapps()
+  const { minapps, custom, disabled, updateMinapps, updateDisabledMinapps } = useMinapps()
   const { theme: themeMode } = useTheme()
   const { t } = useTranslation()
   const dispatch = useAppDispatch()
@@ -59,11 +59,12 @@ const DisplaySettings: FC = () => {
   }, [dispatch])
 
   const handleResetMinApps = useCallback(() => {
-    setVisibleMiniApps(DEFAULT_MIN_APPS)
+    const allApps = [...DEFAULT_MIN_APPS, ...(custom || [])]
+    setVisibleMiniApps(allApps)
     setDisabledMiniApps([])
-    updateMinapps(DEFAULT_MIN_APPS)
+    updateMinapps(allApps)
     updateDisabledMinapps([])
-  }, [updateDisabledMinapps, updateMinapps])
+  }, [custom, setVisibleMiniApps, setDisabledMiniApps, updateMinapps, updateDisabledMinapps])
 
   return (
     <SettingContainer theme={themeMode}>
