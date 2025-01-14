@@ -19,11 +19,7 @@ const Artifacts: FC<Props> = ({ html }) => {
     const path = await window.api.file.create('artifacts-preview.html')
     await window.api.file.write(path, html)
 
-    MinApp.start({
-      name: title,
-      logo: AppLogo,
-      url: `file://${path}`
-    })
+    MinApp.start()
   }
 
   const onDownload = () => {

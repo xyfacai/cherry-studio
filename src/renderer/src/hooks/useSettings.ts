@@ -2,14 +2,13 @@ import store, { useAppDispatch, useAppSelector } from '@renderer/store'
 import {
   SendMessageShortcut,
   setSendMessageShortcut as _setSendMessageShortcut,
-  setSidebarIcons,
   setTheme,
   SettingsState,
   setTopicPosition,
   setTray,
   setWindowStyle
 } from '@renderer/store/settings'
-import { SidebarIcon, ThemeMode } from '@renderer/types'
+import { ThemeMode } from '@renderer/types'
 
 export function useSettings() {
   const settings = useAppSelector((state) => state.settings)
@@ -31,15 +30,6 @@ export function useSettings() {
     },
     setTopicPosition(topicPosition: 'left' | 'right') {
       dispatch(setTopicPosition(topicPosition))
-    },
-    updateSidebarIcons(icons: { visible: SidebarIcon[]; disabled: SidebarIcon[] }) {
-      dispatch(setSidebarIcons(icons))
-    },
-    updateSidebarVisibleIcons(icons: SidebarIcon[]) {
-      dispatch(setSidebarIcons({ visible: icons }))
-    },
-    updateSidebarDisabledIcons(icons: SidebarIcon[]) {
-      dispatch(setSidebarIcons({ disabled: icons }))
     }
   }
 }
