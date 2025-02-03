@@ -1,4 +1,5 @@
 import {
+  AppstoreOutlined,
   CloudOutlined,
   InfoCircleOutlined,
   LayoutOutlined,
@@ -15,6 +16,7 @@ import { Link, Route, Routes, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
 import AboutSettings from './AboutSettings'
+import CustomMinAppSettings from './CustomMinAppSettings'
 import DataSettings from './DataSettings/DataSettings'
 import DisplaySettings from './DisplaySettings/DisplaySettings'
 import GeneralSettings from './GeneralSettings'
@@ -82,6 +84,12 @@ const SettingsPage: FC = () => {
               {t('settings.data.title')}
             </MenuItem>
           </MenuItemLink>
+          <MenuItemLink to="/settings/custom-minapp">
+            <MenuItem className={isRoute('/settings/custom-minapp')}>
+              <AppstoreOutlined />
+              {t('settings.custom_minapp.title')}
+            </MenuItem>
+          </MenuItemLink>
           <MenuItemLink to="/settings/about">
             <MenuItem className={isRoute('/settings/about')}>
               <InfoCircleOutlined />
@@ -98,6 +106,7 @@ const SettingsPage: FC = () => {
             <Route path="data/*" element={<DataSettings />} />
             <Route path="quickAssistant" element={<QuickAssistantSettings />} />
             <Route path="shortcut" element={<ShortcutSettings />} />
+            <Route path="custom-minapp" element={<CustomMinAppSettings />} />
             <Route path="about" element={<AboutSettings />} />
           </Routes>
         </SettingContent>

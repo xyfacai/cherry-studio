@@ -13,6 +13,7 @@ import paintings from './paintings'
 import runtime from './runtime'
 import settings from './settings'
 import shortcuts from './shortcuts'
+import tabs from './tabs'
 
 const rootReducer = combineReducers({
   assistants,
@@ -23,7 +24,8 @@ const rootReducer = combineReducers({
   runtime,
   shortcuts,
   knowledge,
-  minapps
+  minapps,
+  tabs
 })
 
 const persistedReducer = persistReducer(
@@ -38,8 +40,7 @@ const persistedReducer = persistReducer(
 )
 
 const store = configureStore({
-  // @ts-ignore store type is unknown
-  reducer: persistedReducer as typeof rootReducer,
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware({
       serializableCheck: {

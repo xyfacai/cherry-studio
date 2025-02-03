@@ -1,12 +1,15 @@
 import '@renderer/databases'
 
 import store, { persistor } from '@renderer/store'
+import { useEffect } from 'react'
+import { FC } from 'react'
 import { Provider } from 'react-redux'
-import { HashRouter, Route, Routes } from 'react-router-dom'
+import { HashRouter, Route, Routes, useNavigate } from 'react-router-dom'
 import { PersistGate } from 'redux-persist/integration/react'
 
 import Sidebar from './components/app/Sidebar'
 import TopViewContainer from './components/TopView'
+import WebviewContainer from './components/WebviewContainer'
 import AntdProvider from './context/AntdProvider'
 import { SyntaxHighlighterProvider } from './context/SyntaxHighlighterProvider'
 import { ThemeProvider } from './context/ThemeProvider'
@@ -17,7 +20,35 @@ import HomePage from './pages/home/HomePage'
 import KnowledgePage from './pages/knowledge/KnowledgePage'
 import PaintingsPage from './pages/paintings/PaintingsPage'
 import SettingsPage from './pages/settings/SettingsPage'
+import TabsPage from './pages/tabs/TabsPage'
 import TranslatePage from './pages/translate/TranslatePage'
+import NavigationService from './services/NavigationService'
+
+const AppRoutes: FC = () => {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    NavigationService.setNavigate(navigate)
+  }, [navigate])
+
+  return (
+    <>
+      <Sidebar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/agents" element={<AgentsPage />} />
+        <Route path="/paintings" element={<PaintingsPage />} />
+        <Route path="/translate" element={<TranslatePage />} />
+        <Route path="/files" element={<FilesPage />} />
+        <Route path="/knowledge" element={<KnowledgePage />} />
+        <Route path="/apps" element={<AppsPage />} />
+        <Route path="/settings/*" element={<SettingsPage />} />
+        <Route path="/tabs" element={<TabsPage />} />
+      </Routes>
+      <WebviewContainer />
+    </>
+  )
+}
 
 function App(): JSX.Element {
   return (
@@ -28,17 +59,7 @@ function App(): JSX.Element {
             <PersistGate loading={null} persistor={persistor}>
               <TopViewContainer>
                 <HashRouter>
-                  <Sidebar />
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/agents" element={<AgentsPage />} />
-                    <Route path="/paintings" element={<PaintingsPage />} />
-                    <Route path="/translate" element={<TranslatePage />} />
-                    <Route path="/files" element={<FilesPage />} />
-                    <Route path="/knowledge" element={<KnowledgePage />} />
-                    <Route path="/apps" element={<AppsPage />} />
-                    <Route path="/settings/*" element={<SettingsPage />} />
-                  </Routes>
+                  <AppRoutes />
                 </HashRouter>
               </TopViewContainer>
             </PersistGate>
