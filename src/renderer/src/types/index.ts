@@ -5,6 +5,7 @@ export type Assistant = {
   id: string
   name: string
   prompt: string
+  knowledge_base?: KnowledgeBase
   topics: Topic[]
   type: string
   emoji?: string
@@ -38,6 +39,7 @@ export type AssistantSettings = {
   defaultModel?: Model
   autoResetModel: boolean
   customParameters?: AssistantSettingCustomParameters[]
+  reasoning_effort?: 'low' | 'medium' | 'high'
 }
 
 export type Agent = Omit<Assistant, 'model'>
@@ -53,6 +55,7 @@ export type Message = {
   createdAt: string
   status: 'sending' | 'pending' | 'success' | 'paused' | 'error'
   modelId?: string
+  model?: Model
   files?: FileType[]
   images?: string[]
   usage?: OpenAI.Completions.CompletionUsage
@@ -61,13 +64,13 @@ export type Message = {
   type: 'text' | '@' | 'clear'
   isPreset?: boolean
   mentions?: Model[]
-  model?: Model
   metadata?: {
     // Gemini
     groundingMetadata?: any
   }
   askId?: string
   useful?: boolean
+  error?: Record<string, any>
 }
 
 export type Metrics = {
@@ -105,9 +108,9 @@ export type Provider = {
   isSystem?: boolean
 }
 
-export type ProviderType = 'openai' | 'anthropic' | 'gemini' | 'qwenlm'
+export type ProviderType = 'openai' | 'anthropic' | 'gemini' | 'qwenlm' | 'azure-openai'
 
-export type ModelType = 'text' | 'vision' | 'embedding'
+export type ModelType = 'text' | 'vision' | 'embedding' | 'reasoning'
 
 export type Model = {
   id: string
@@ -191,6 +194,7 @@ export type AppInfo = {
   isPackaged: boolean
   appPath: string
   appDataPath: string
+  resourcesPath: string
   filesPath: string
   logsPath: string
 }
@@ -231,6 +235,9 @@ export interface KnowledgeBase {
   created_at: number
   updated_at: number
   version: number
+  documentCount?: number
+  chunkSize?: number
+  chunkOverlap?: number
 }
 
 export type KnowledgeBaseParams = {
@@ -240,6 +247,8 @@ export type KnowledgeBaseParams = {
   apiKey: string
   apiVersion?: string
   baseURL: string
+  chunkSize?: number
+  chunkOverlap?: number
 }
 
 export type GenerateImageParams = {

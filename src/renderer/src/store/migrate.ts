@@ -814,7 +814,7 @@ const migrateConfig = {
     state.llm.providers.push({
       id: 'qwenlm',
       name: 'QwenLM',
-      type: 'openai',
+      type: 'qwenlm',
       apiKey: '',
       apiHost: 'https://chat.qwenlm.ai/api/',
       models: SYSTEM_MODELS.qwenlm,
@@ -879,7 +879,47 @@ const migrateConfig = {
     return state
   },
   '60': (state: RootState) => {
-    state.settings.multiModelMessageStyle = 'vertical'
+    state.settings.multiModelMessageStyle = 'fold'
+    return state
+  },
+  '61': (state: RootState) => {
+    state.llm.providers.forEach((provider) => {
+      if (provider.id === 'qwenlm') {
+        provider.type = 'qwenlm'
+      }
+    })
+    return state
+  },
+  '62': (state: RootState) => {
+    state.llm.providers.forEach((provider) => {
+      if (provider.id === 'azure-openai') {
+        provider.type = 'azure-openai'
+      }
+    })
+    state.settings.translateModelPrompt = TRANSLATE_PROMPT
+    return state
+  },
+  '63': (state: RootState) => {
+    if (state.minapps) {
+      const mintop = DEFAULT_MIN_APPS.find((app) => app.id === '3mintop')
+      if (mintop) {
+        state.minapps.enabled.push(mintop)
+      }
+    }
+    return state
+  },
+  '64': (state: RootState) => {
+    state.llm.providers = state.llm.providers.filter((provider) => provider.id !== 'qwenlm')
+    state.llm.providers.push({
+      id: 'baidu-cloud',
+      name: 'Baidu Cloud',
+      type: 'openai',
+      apiKey: '',
+      apiHost: 'https://qianfan.baidubce.com/v2/',
+      models: SYSTEM_MODELS['baidu-cloud'],
+      isSystem: true,
+      enabled: false
+    })
     return state
   }
 }

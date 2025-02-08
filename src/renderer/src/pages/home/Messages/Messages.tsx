@@ -9,15 +9,14 @@ import { getDefaultTopic } from '@renderer/services/AssistantService'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import {
   deleteMessageFiles,
-  filterMessages,
   getAssistantMessage,
   getContextCount,
   getGroupedMessages,
   getUserMessage
 } from '@renderer/services/MessagesService'
 import { estimateHistoryTokens } from '@renderer/services/TokenService'
-import { Assistant, Message, Model, Topic } from '@renderer/types'
-import { captureScrollableDiv, runAsyncFunction, uuid } from '@renderer/utils'
+import { Assistant, Message, Topic } from '@renderer/types'
+import { captureScrollableDiv, runAsyncFunction } from '@renderer/utils'
 import { t } from 'i18next'
 import { flatten, last, take } from 'lodash'
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -68,6 +67,7 @@ const Messages: FC<Props> = ({ assistant, topic, setActiveTopic }) => {
   const onSendMessage = useCallback(
     async (message: Message) => {
       const assistantMessages: Message[] = []
+
       if (message.mentions?.length) {
         message.mentions.forEach((m) => {
           const assistantMessage = getAssistantMessage({ assistant: { ...assistant, model: m }, topic })
@@ -90,6 +90,17 @@ const Messages: FC<Props> = ({ assistant, topic, setActiveTopic }) => {
       scrollToBottom()
     },
     [assistant, scrollToBottom, topic]
+  )
+
+  const onAppendMessage = useCallback(
+    (message: Message) => {
+      setMessages((prev) => {
+        const messages = prev.concat([message])
+        db.topics.put({ id: topic.id, messages })
+        return messages
+      })
+    },
+    [topic.id]
   )
 
   const autoRenameTopic = useCallback(async () => {
@@ -146,13 +157,9 @@ const Messages: FC<Props> = ({ assistant, topic, setActiveTopic }) => {
   useEffect(() => {
     const unsubscribes = [
       EventEmitter.on(EVENT_NAMES.SEND_MESSAGE, onSendMessage),
+      EventEmitter.on(EVENT_NAMES.APPEND_MESSAGE, onAppendMessage),
       EventEmitter.on(EVENT_NAMES.RECEIVE_MESSAGE, async () => {
         setTimeout(() => EventEmitter.emit(EVENT_NAMES.AI_AUTO_RENAME), 100)
-      }),
-      EventEmitter.on(EVENT_NAMES.REGENERATE_MESSAGE, async (model: Model) => {
-        const lastUserMessage = last(filterMessages(messages).filter((m) => m.role === 'user'))
-        lastUserMessage &&
-          onSendMessage({ ...lastUserMessage, id: uuid(), modelId: model.id, model: model, mentions: [model] })
       }),
       EventEmitter.on(EVENT_NAMES.AI_AUTO_RENAME, autoRenameTopic),
       EventEmitter.on(EVENT_NAMES.CLEAR_MESSAGES, () => {
@@ -215,6 +222,7 @@ const Messages: FC<Props> = ({ assistant, topic, setActiveTopic }) => {
     assistant,
     autoRenameTopic,
     messages,
+    onAppendMessage,
     onDeleteMessage,
     onSendMessage,
     scrollToBottom,

@@ -1,4 +1,5 @@
 import type { ExtractChunkData } from '@llm-tools/embedjs-interfaces'
+import { getEmbeddingMaxContext } from '@renderer/config/embedings'
 import AiProvider from '@renderer/providers/AiProvider'
 import { FileType, KnowledgeBase, KnowledgeBaseParams, Message } from '@renderer/types'
 import { take } from 'lodash'
@@ -16,13 +17,27 @@ export const getKnowledgeBaseParams = (base: KnowledgeBase): KnowledgeBaseParams
     host = host + '/v1beta/openai/'
   }
 
+  let chunkSize = base.chunkSize
+  const maxChunkSize = getEmbeddingMaxContext(base.model.id)
+
+  if (maxChunkSize) {
+    if (chunkSize && chunkSize > maxChunkSize) {
+      chunkSize = maxChunkSize
+    }
+    if (!chunkSize) {
+      chunkSize = maxChunkSize
+    }
+  }
+
   return {
     id: base.id,
     model: base.model.id,
     dimensions: base.dimensions,
     apiKey: aiProvider.getApiKey() || 'secret',
     apiVersion: provider.apiVersion,
-    baseURL: host
+    baseURL: host,
+    chunkSize,
+    chunkOverlap: base.chunkOverlap
   }
 }
 
@@ -75,8 +90,10 @@ export const getKnowledgeReferences = async (base: KnowledgeBase, message: Messa
     })
   )
 
+  const documentCount = base.documentCount || 6
+
   const references = await Promise.all(
-    take(_searchResults, 6).map(async (item, index) => {
+    take(_searchResults, documentCount).map(async (item, index) => {
       const baseItem = base.items.find((i) => i.uniqueId === item.metadata.uniqueLoaderId)
       return {
         id: index,
