@@ -18,7 +18,7 @@ interface Props {
   ToolbarButton: any
 }
 
-const MentionModelsButton: FC<Props> = ({ onMentionModel: onSelect, ToolbarButton }) => {
+const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelect, ToolbarButton }) => {
   const { providers } = useProviders()
   const [pinnedModels, setPinnedModels] = useState<string[]>([])
   const { t } = useTranslation()
@@ -26,7 +26,6 @@ const MentionModelsButton: FC<Props> = ({ onMentionModel: onSelect, ToolbarButto
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
-  const [allModelItems, setAllModelItems] = useState<Array<{ key: string; onClick: () => void }>>([])
 
   const togglePin = async (modelId: string) => {
     const newPinnedModels = pinnedModels.includes(modelId)
@@ -37,14 +36,22 @@ const MentionModelsButton: FC<Props> = ({ onMentionModel: onSelect, ToolbarButto
     setPinnedModels(newPinnedModels)
   }
 
+  const handleModelSelect = (model: Model) => {
+    onSelect(model)
+    setIsOpen(false)
+  }
+
   const modelMenuItems = useMemo(() => {
     const items = providers
       .filter((p) => p.models && p.models.length > 0)
       .map((p) => {
         const filteredModels = sortBy(p.models, ['group', 'name'])
           .filter((m) => !isEmbeddingModel(m))
+          // Filter out already selected models
+          .filter((m) => !mentionModels.some((selected) => selected.id === m.id))
           .map((m) => ({
             key: getModelUniqId(m),
+            model: m,
             label: (
               <ModelItem>
                 <ModelNameRow>
@@ -65,10 +72,7 @@ const MentionModelsButton: FC<Props> = ({ onMentionModel: onSelect, ToolbarButto
                 {first(m.name)}
               </Avatar>
             ),
-            onClick: () => {
-              onSelect(m)
-              setIsOpen(false)
-            }
+            onClick: () => handleModelSelect(m)
           }))
 
         return filteredModels.length > 0
@@ -80,11 +84,11 @@ const MentionModelsButton: FC<Props> = ({ onMentionModel: onSelect, ToolbarButto
             }
           : null
       })
-      .filter(Boolean)
+      .filter((group): group is NonNullable<typeof group> => group !== null)
 
     if (pinnedModels.length > 0) {
       const pinnedItems = items
-        .flatMap((p) => p?.children || [])
+        .flatMap((p) => p.children)
         .filter((m) => pinnedModels.includes(m.key))
         .map((m) => ({ ...m, key: m.key + 'pinned' }))
 
@@ -98,8 +102,14 @@ const MentionModelsButton: FC<Props> = ({ onMentionModel: onSelect, ToolbarButto
       }
     }
 
-    return items
-  }, [providers, pinnedModels, t, onSelect])
+    // Remove empty groups
+    return items.filter((group) => group.children.length > 0)
+  }, [providers, pinnedModels, t, onSelect, mentionModels])
+
+  // Get flattened list of all model items
+  const flatModelItems = useMemo(() => {
+    return modelMenuItems.flatMap((group) => group?.children || [])
+  }, [modelMenuItems])
 
   useEffect(() => {
     const loadPinnedModels = async () => {
@@ -108,11 +118,6 @@ const MentionModelsButton: FC<Props> = ({ onMentionModel: onSelect, ToolbarButto
     }
     loadPinnedModels()
   }, [])
-
-  useEffect(() => {
-    const items = modelMenuItems.flatMap((group) => group?.children || [])
-    setAllModelItems(items)
-  }, [modelMenuItems])
 
   useEffect(() => {
     const showModelSelector = () => {
@@ -126,17 +131,14 @@ const MentionModelsButton: FC<Props> = ({ onMentionModel: onSelect, ToolbarButto
 
       if (e.key === 'ArrowDown') {
         e.preventDefault()
-        setSelectedIndex((prev) => {
-          const allItems = menuRef.current?.querySelectorAll('.ant-dropdown-menu-item') || []
-          return prev < allItems.length - 1 ? prev + 1 : prev
-        })
+        setSelectedIndex((prev) => (prev < flatModelItems.length - 1 ? prev + 1 : prev))
       } else if (e.key === 'ArrowUp') {
         e.preventDefault()
         setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev))
       } else if (e.key === 'Enter') {
         e.preventDefault()
-        if (selectedIndex >= 0 && selectedIndex < allModelItems.length) {
-          allModelItems[selectedIndex].onClick()
+        if (selectedIndex >= 0 && selectedIndex < flatModelItems.length) {
+          flatModelItems[selectedIndex].onClick()
           setIsOpen(false)
         }
       } else if (e.key === 'Escape') {
@@ -155,12 +157,21 @@ const MentionModelsButton: FC<Props> = ({ onMentionModel: onSelect, ToolbarButto
       EventEmitter.off(EVENT_NAMES.SHOW_MODEL_SELECTOR, showModelSelector)
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isOpen, selectedIndex, allModelItems])
+  }, [isOpen, selectedIndex, flatModelItems])
+
+  // Hide dropdown if no models available
+  if (flatModelItems.length === 0) {
+    return null
+  }
 
   const menu = (
     <div ref={menuRef} className="ant-dropdown-menu">
-      {modelMenuItems.map((group) => {
+      {modelMenuItems.map((group, groupIndex) => {
         if (!group) return null
+
+        // Calculate the starting index for this group's items
+        const startIndex = modelMenuItems.slice(0, groupIndex).reduce((acc, g) => acc + (g?.children?.length || 0), 0)
+
         return (
           <div key={group.key} className="ant-dropdown-menu-item-group">
             <div className="ant-dropdown-menu-item-group-title">{group.label}</div>
@@ -168,7 +179,7 @@ const MentionModelsButton: FC<Props> = ({ onMentionModel: onSelect, ToolbarButto
               {group.children.map((item, idx) => (
                 <div
                   key={item.key}
-                  className={`ant-dropdown-menu-item ${selectedIndex === idx ? 'ant-dropdown-menu-item-selected' : ''}`}
+                  className={`ant-dropdown-menu-item ${selectedIndex === startIndex + idx ? 'ant-dropdown-menu-item-selected' : ''}`}
                   onClick={item.onClick}>
                   <span className="ant-dropdown-menu-item-icon">{item.icon}</span>
                   {item.label}
@@ -187,8 +198,9 @@ const MentionModelsButton: FC<Props> = ({ onMentionModel: onSelect, ToolbarButto
       <Dropdown
         dropdownRender={() => menu}
         trigger={['click']}
-        overlayClassName="mention-models-dropdown"
-        onOpenChange={setIsOpen}>
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        overlayClassName="mention-models-dropdown">
         <Tooltip placement="top" title={t('agents.edit.model.select.title')} arrow>
           <ToolbarButton type="text" ref={dropdownRef}>
             <i className="iconfont icon-at" style={{ fontSize: 18 }}></i>
