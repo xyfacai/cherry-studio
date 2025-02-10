@@ -165,6 +165,18 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic }) => {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const isEnterPressed = event.keyCode == 13
 
+    if (event.key === '@') {
+      const textArea = textareaRef.current?.resizableTextArea?.textArea
+      if (textArea) {
+        const cursorPosition = textArea.selectionStart
+        const textBeforeCursor = text.substring(0, cursorPosition)
+        if (cursorPosition === 0 || textBeforeCursor.endsWith(' ')) {
+          EventEmitter.emit(EVENT_NAMES.SHOW_MODEL_SELECTOR)
+          return
+        }
+      }
+    }
+
     if (autoTranslateWithSpace) {
       if (event.key === ' ') {
         setSpaceClickCount((prev) => prev + 1)
@@ -420,17 +432,21 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic }) => {
     setSelectedKnowledgeBase(base)
   }
 
-  const onMentionModel = useCallback(
-    (model: Model) => {
-      const isSelected = mentionModels.some((m) => m.id === model.id)
-      if (isSelected) {
-        setMentionModels(mentionModels.filter((m) => m.id !== model.id))
-      } else {
-        setMentionModels([...mentionModels, model])
+  const onMentionModel = (model: Model) => {
+    const textArea = textareaRef.current?.resizableTextArea?.textArea
+    if (textArea) {
+      const cursorPosition = textArea.selectionStart
+      const textBeforeCursor = text.substring(0, cursorPosition)
+      const lastAtIndex = textBeforeCursor.lastIndexOf('@')
+
+      if (lastAtIndex !== -1) {
+        const newText = text.substring(0, lastAtIndex) + text.substring(cursorPosition)
+        setText(newText)
       }
-    },
-    [mentionModels]
-  )
+
+      setMentionModels((prev) => [...prev, model])
+    }
+  }
 
   const handleRemoveModel = (model: Model) => {
     setMentionModels(mentionModels.filter((m) => m.id !== model.id))
