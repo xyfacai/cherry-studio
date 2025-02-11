@@ -26,6 +26,7 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
   const [selectedIndex, setSelectedIndex] = useState(-1)
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const [searchText, setSearchText] = useState('')
 
   const togglePin = async (modelId: string) => {
     const newPinnedModels = pinnedModels.includes(modelId)
@@ -53,6 +54,14 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
           .filter((m) => !isEmbeddingModel(m))
           // Filter out pinned models from regular groups
           .filter((m) => !pinnedModels.includes(getModelUniqId(m)))
+          // Filter by search text
+          .filter((m) => {
+            if (!searchText) return true
+            return (
+              m.name.toLowerCase().includes(searchText.toLowerCase()) ||
+              m.id.toLowerCase().includes(searchText.toLowerCase())
+            )
+          })
           .map((m) => ({
             key: getModelUniqId(m),
             model: m,
@@ -143,7 +152,7 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
 
     // Remove empty groups
     return items.filter((group) => group.children.length > 0)
-  }, [providers, pinnedModels, t, onSelect, mentionModels])
+  }, [providers, pinnedModels, t, onSelect, mentionModels, searchText])
 
   // Get flattened list of all model items
   const flatModelItems = useMemo(() => {
@@ -163,6 +172,7 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
       dropdownRef.current?.click()
       setIsOpen(true)
       setSelectedIndex(0)
+      setSearchText('')
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -182,9 +192,11 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
             flatModelItems[selectedIndex].onClick()
           }
           setIsOpen(false)
+          setSearchText('')
         }
       } else if (e.key === 'Escape') {
         setIsOpen(false)
+        setSearchText('')
       }
     }
 
@@ -196,6 +208,11 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
 
       if (lastAtIndex === -1 || textBeforeCursor.slice(lastAtIndex + 1).includes(' ')) {
         setIsOpen(false)
+        setSearchText('')
+      } else if (lastAtIndex !== -1) {
+        // Get the text after @ for search
+        const searchStr = textBeforeCursor.slice(lastAtIndex + 1)
+        setSearchText(searchStr)
       }
     }
 
