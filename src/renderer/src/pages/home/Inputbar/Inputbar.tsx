@@ -85,6 +85,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic }) => {
   const [isTranslating, setIsTranslating] = useState(false)
   const [selectedKnowledgeBase, setSelectedKnowledgeBase] = useState<KnowledgeBase | undefined>(_base)
   const [mentionModels, setMentionModels] = useState<Model[]>([])
+  const [isMentionPopupOpen, setIsMentionPopupOpen] = useState(false)
 
   const isVision = useMemo(() => isVisionModel(model), [model])
   const supportExts = useMemo(() => [...textExts, ...documentExts, ...(isVision ? imageExts : [])], [isVision])
@@ -172,9 +173,15 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic }) => {
         const textBeforeCursor = text.substring(0, cursorPosition)
         if (cursorPosition === 0 || textBeforeCursor.endsWith(' ')) {
           EventEmitter.emit(EVENT_NAMES.SHOW_MODEL_SELECTOR)
+          setIsMentionPopupOpen(true)
           return
         }
       }
+    }
+
+    if (event.key === 'Escape' && isMentionPopupOpen) {
+      setIsMentionPopupOpen(false)
+      return
     }
 
     if (autoTranslateWithSpace) {
@@ -205,25 +212,34 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic }) => {
       }
     }
 
-    if (sendMessageShortcut === 'Enter' && isEnterPressed) {
-      if (event.shiftKey) {
-        return
+    if (isEnterPressed && !event.shiftKey && sendMessageShortcut === 'Enter') {
+      if (isMentionPopupOpen) {
+        return event.preventDefault()
       }
       sendMessage()
       return event.preventDefault()
     }
 
     if (sendMessageShortcut === 'Shift+Enter' && isEnterPressed && event.shiftKey) {
+      if (isMentionPopupOpen) {
+        return event.preventDefault()
+      }
       sendMessage()
       return event.preventDefault()
     }
 
     if (sendMessageShortcut === 'Ctrl+Enter' && isEnterPressed && event.ctrlKey) {
+      if (isMentionPopupOpen) {
+        return event.preventDefault()
+      }
       sendMessage()
       return event.preventDefault()
     }
 
     if (sendMessageShortcut === 'Command+Enter' && isEnterPressed && event.metaKey) {
+      if (isMentionPopupOpen) {
+        return event.preventDefault()
+      }
       sendMessage()
       return event.preventDefault()
     }
@@ -445,6 +461,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic }) => {
       }
 
       setMentionModels((prev) => [...prev, model])
+      setIsMentionPopupOpen(false)
     }
   }
 
