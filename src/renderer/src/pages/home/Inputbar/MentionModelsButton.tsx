@@ -37,6 +37,10 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
   }
 
   const handleModelSelect = (model: Model) => {
+    // Check if model is already selected
+    if (mentionModels.some((selected) => selected.id === model.id)) {
+      return
+    }
     onSelect(model)
     setIsOpen(false)
   }
@@ -48,14 +52,25 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
         const filteredModels = sortBy(p.models, ['group', 'name'])
           .filter((m) => !isEmbeddingModel(m))
           // Filter out already selected models
-          .filter((m) => !mentionModels.some((selected) => selected.id === m.id))
+          // .filter((m) => !mentionModels.some((selected) => selected.id === m.id))
           .map((m) => ({
             key: getModelUniqId(m),
             model: m,
             label: (
               <ModelItem>
                 <ModelNameRow>
-                  <span>{m?.name}</span> <ModelTags model={m} />
+                  {pinnedModels.includes(getModelUniqId(m)) ? (
+                    <>
+                      <span>
+                        {m?.name} | {p.name}
+                      </span>{' '}
+                      <ModelTags model={m} />
+                    </>
+                  ) : (
+                    <>
+                      <span>{m?.name}</span> <ModelTags model={m} />
+                    </>
+                  )}
                 </ModelNameRow>
                 <PinIcon
                   onClick={(e) => {
@@ -138,7 +153,10 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
       } else if (e.key === 'Enter') {
         e.preventDefault()
         if (selectedIndex >= 0 && selectedIndex < flatModelItems.length) {
-          flatModelItems[selectedIndex].onClick()
+          const selectedModel = flatModelItems[selectedIndex].model
+          if (!mentionModels.some((selected) => selected.id === selectedModel.id)) {
+            flatModelItems[selectedIndex].onClick()
+          }
           setIsOpen(false)
         }
       } else if (e.key === 'Escape') {
