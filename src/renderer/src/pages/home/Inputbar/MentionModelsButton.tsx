@@ -186,10 +186,22 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
       } else if (e.key === 'Escape') {
         setIsOpen(false)
       }
+    }
 
-      // Scroll selected item into view
-      const selectedItem = menuRef.current?.querySelectorAll('.ant-dropdown-menu-item')[selectedIndex]
-      selectedItem?.scrollIntoView({ block: 'nearest' })
+    const handleTextChange = (e: Event) => {
+      const textArea = e.target as HTMLTextAreaElement
+      const cursorPosition = textArea.selectionStart
+      const textBeforeCursor = textArea.value.substring(0, cursorPosition)
+      const lastAtIndex = textBeforeCursor.lastIndexOf('@')
+
+      if (lastAtIndex === -1 || textBeforeCursor.slice(lastAtIndex + 1).includes(' ')) {
+        setIsOpen(false)
+      }
+    }
+
+    const textArea = document.querySelector('.inputbar textarea') as HTMLTextAreaElement
+    if (textArea) {
+      textArea.addEventListener('input', handleTextChange)
     }
 
     EventEmitter.on(EVENT_NAMES.SHOW_MODEL_SELECTOR, showModelSelector)
@@ -198,8 +210,11 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
     return () => {
       EventEmitter.off(EVENT_NAMES.SHOW_MODEL_SELECTOR, showModelSelector)
       document.removeEventListener('keydown', handleKeyDown)
+      if (textArea) {
+        textArea.removeEventListener('input', handleTextChange)
+      }
     }
-  }, [isOpen, selectedIndex, flatModelItems])
+  }, [isOpen, selectedIndex, flatModelItems, mentionModels])
 
   // Hide dropdown if no models available
   if (flatModelItems.length === 0) {
@@ -260,6 +275,7 @@ const DropdownMenuStyle = createGlobalStyle`
       overflow-y: auto;
       overflow-x: hidden;
       padding: 4px 0;
+      margin-bottom: 40px;
 
       &::-webkit-scrollbar {
         width: 6px;
