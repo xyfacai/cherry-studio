@@ -308,6 +308,23 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic }) => {
 
   const onInput = () => !expended && resizeTextArea()
 
+  const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = e.target.value
+    setText(newText)
+
+    // Check if @ was deleted
+    const textArea = textareaRef.current?.resizableTextArea?.textArea
+    if (textArea) {
+      const cursorPosition = textArea.selectionStart
+      const textBeforeCursor = newText.substring(0, cursorPosition)
+      const lastAtIndex = textBeforeCursor.lastIndexOf('@')
+
+      if (lastAtIndex === -1 || textBeforeCursor.slice(lastAtIndex + 1).includes(' ')) {
+        setIsMentionPopupOpen(false)
+      }
+    }
+  }
+
   const onPaste = useCallback(
     async (event: ClipboardEvent) => {
       const clipboardText = event.clipboardData?.getData('text')
@@ -480,7 +497,7 @@ const Inputbar: FC<Props> = ({ assistant: _assistant, setActiveTopic }) => {
           <MentionModelsInput selectedModels={mentionModels} onRemoveModel={handleRemoveModel} />
           <Textarea
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={onChange}
             onKeyDown={handleKeyDown}
             placeholder={isTranslating ? t('chat.input.translating') : t('chat.input.placeholder')}
             autoFocus
