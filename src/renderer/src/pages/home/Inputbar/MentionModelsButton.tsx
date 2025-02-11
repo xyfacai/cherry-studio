@@ -5,7 +5,7 @@ import db from '@renderer/databases'
 import { useProviders } from '@renderer/hooks/useProvider'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import { getModelUniqId } from '@renderer/services/ModelService'
-import { Model } from '@renderer/types'
+import { Model, Provider } from '@renderer/types'
 import { Avatar, Dropdown, Tooltip } from 'antd'
 import { first, sortBy } from 'lodash'
 import { FC, useEffect, useMemo, useRef, useState } from 'react'
@@ -51,26 +51,15 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
       .map((p) => {
         const filteredModels = sortBy(p.models, ['group', 'name'])
           .filter((m) => !isEmbeddingModel(m))
-          // Filter out already selected models
-          // .filter((m) => !mentionModels.some((selected) => selected.id === m.id))
+          // Filter out pinned models from regular groups
+          .filter((m) => !pinnedModels.includes(getModelUniqId(m)))
           .map((m) => ({
             key: getModelUniqId(m),
             model: m,
             label: (
               <ModelItem>
                 <ModelNameRow>
-                  {pinnedModels.includes(getModelUniqId(m)) ? (
-                    <>
-                      <span>
-                        {m?.name} | {p.name}
-                      </span>{' '}
-                      <ModelTags model={m} />
-                    </>
-                  ) : (
-                    <>
-                      <span>{m?.name}</span> <ModelTags model={m} />
-                    </>
-                  )}
+                  <span>{m?.name}</span> <ModelTags model={m} />
                 </ModelNameRow>
                 <PinIcon
                   onClick={(e) => {
@@ -102,10 +91,45 @@ const MentionModelsButton: FC<Props> = ({ mentionModels, onMentionModel: onSelec
       .filter((group): group is NonNullable<typeof group> => group !== null)
 
     if (pinnedModels.length > 0) {
-      const pinnedItems = items
-        .flatMap((p) => p.children)
-        .filter((m) => pinnedModels.includes(m.key))
-        .map((m) => ({ ...m, key: m.key + 'pinned' }))
+      const pinnedItems = providers
+        .filter((p): p is Provider => p.models && p.models.length > 0)
+        .flatMap((p) =>
+          p.models
+            .filter((m) => pinnedModels.includes(getModelUniqId(m)))
+            .map((m) => ({
+              key: getModelUniqId(m),
+              model: m,
+              provider: p
+            }))
+        )
+        .map((m) => ({
+          ...m,
+          key: m.key + 'pinned',
+          label: (
+            <ModelItem>
+              <ModelNameRow>
+                <span>
+                  {m.model?.name} | {m.provider.isSystem ? t(`provider.${m.provider.id}`) : m.provider.name}
+                </span>{' '}
+                <ModelTags model={m.model} />
+              </ModelNameRow>
+              <PinIcon
+                onClick={(e) => {
+                  e.stopPropagation()
+                  togglePin(getModelUniqId(m.model))
+                }}
+                $isPinned={true}>
+                <PushpinOutlined />
+              </PinIcon>
+            </ModelItem>
+          ),
+          icon: (
+            <Avatar src={getModelLogo(m.model.id)} size={24}>
+              {first(m.model.name)}
+            </Avatar>
+          ),
+          onClick: () => handleModelSelect(m.model)
+        }))
 
       if (pinnedItems.length > 0) {
         items.unshift({
