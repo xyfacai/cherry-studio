@@ -725,10 +725,21 @@
       },
       "error.failed": "翻译失败",
       "error.not_configured": "翻译模型未配置",
+      "error.check_config": "请前往设置检查模型配置是否正常",
       "input.placeholder": "输入文本进行翻译",
       "output.placeholder": "翻译",
       "processing": "翻译中...",
-      "title": "翻译"
+      "title": "翻译",
+      "history.title": "翻译历史",
+      "history.empty": "清空历史记录",
+      "history.button": "查看历史记录",
+      "history.clear": "清空历史",
+      "history.cleared": "历史记录已清除",
+      "history.clear.confirm": "确定要清空翻译历史吗？",
+      "history.count": "保留记录数",
+      "history.limit.custom": "自定义",
+      "history.limit.unlimited": "无限制",
+      "history.limit.disabled": "不保存"
     },
     "tray": {
       "quit": "退出",

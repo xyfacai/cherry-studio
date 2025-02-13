@@ -725,10 +725,21 @@
       },
       "error.failed": "翻譯失敗",
       "error.not_configured": "翻譯模型未配置",
+      "error.check_config": "請前往設定檢查模型配置是否正常",
       "input.placeholder": "輸入文字進行翻譯",
       "output.placeholder": "翻譯",
       "processing": "翻譯中...",
-      "title": "翻譯"
+      "title": "翻譯",
+      "history.title": "翻譯歷史",
+      "history.empty": "清空歷史記錄",
+      "history.button": "查看歷史記錄",
+      "history.clear": "清空歷史",
+      "history.cleared": "歷史記錄已清除",
+      "history.clear.confirm": "確定要清空翻譯歷史嗎？",
+      "history.count": "保留記錄數",
+      "history.limit.custom": "自定義",
+      "history.limit.unlimited": "無限制",
+      "history.limit.disabled": "不保存"
     },
     "tray": {
       "quit": "退出",

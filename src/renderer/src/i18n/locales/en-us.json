@@ -725,10 +725,21 @@
       },
       "error.failed": "Translation failed",
       "error.not_configured": "Translation model is not configured",
+      "error.check_config": "Please go to settings to check if the model configuration is normal",
       "input.placeholder": "Enter text to translate",
       "output.placeholder": "Translation",
       "processing": "Translation in progress...",
-      "title": "Translation"
+      "title": "Translation",
+      "history.title": "Translation History",
+      "history.empty": "Clear History",
+      "history.button": "View History",
+      "history.clear": "Clear History",
+      "history.cleared": "History Cleared",
+      "history.clear.confirm": "Are you sure you want to clear the translation history?",
+      "history.count": "Number of Records to Keep",
+      "history.limit.custom": "Custom",
+      "history.limit.unlimited": "Unlimited",
+      "history.limit.disabled": "Do Not Save"
     },
     "tray": {
       "quit": "Quit",

@@ -127,21 +127,41 @@ export async function fetchTranslate({ message, assistant, onResponse }: FetchTr
   const model = getTranslateModel()
 
   if (!model) {
-    return ''
+    window.message.error(i18n.t('translate.error.check_config'))
+    return {
+      valid: false,
+      error: new Error(i18n.t('translate.error.check_config'))
+    }
   }
 
   const provider = getProviderByModel(model)
 
   if (!hasApiKey(provider)) {
-    return ''
+    window.message.error(i18n.t('translate.error.check_config'))
+    return {
+      valid: false,
+      error: new Error(i18n.t('translate.error.check_config'))
+    }
   }
 
   const AI = new AiProvider(provider)
 
   try {
-    return await AI.translate(message, assistant, onResponse)
+    const result = await AI.translate(message, assistant, onResponse)
+    if (!result?.trim()) {
+      window.message.error(i18n.t('translate.error.check_config'))
+      return {
+        valid: false,
+        error: new Error(i18n.t('translate.error.check_config'))
+      }
+    }
+    return result
   } catch (error: any) {
-    return ''
+    window.message.error({
+      content: i18n.t('translate.error.failed'),
+      key: 'translate-message'
+    })
+    throw error
   }
 }
 

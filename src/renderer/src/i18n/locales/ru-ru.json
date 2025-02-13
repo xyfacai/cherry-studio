@@ -725,10 +725,21 @@
       },
       "error.failed": "Перевод не удалось",
       "error.not_configured": "Модель перевода не настроена",
+      "error.check_config": "Пожалуйста, перейдите в настройки и проверьте, правильно ли настроена модель",
       "input.placeholder": "Введите текст для перевода",
       "output.placeholder": "Перевод",
       "processing": "Перевод в процессе...",
-      "title": "Перевод"
+      "title": "Перевод",
+      "history.title": "История переводов",
+      "history.empty": "Очистить историю",
+      "history.button": "Просмотреть историю",
+      "history.clear": "Очистить историю",
+      "history.cleared": "История очищена",
+      "history.clear.confirm": "Вы уверены, что хотите очистить историю переводов?",
+      "history.count": "Количество сохраняемых записей",
+      "history.limit.custom": "Пользовательская",
+      "history.limit.unlimited": "Без ограничений",
+      "history.limit.disabled": "Не сохранять"
     },
     "tray": {
       "quit": "Выйти",
