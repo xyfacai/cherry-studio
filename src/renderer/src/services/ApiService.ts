@@ -128,20 +128,14 @@ export async function fetchTranslate({ message, assistant, onResponse }: FetchTr
 
   if (!model) {
     window.message.error(i18n.t('translate.error.check_config'))
-    return {
-      valid: false,
-      error: new Error(i18n.t('translate.error.check_config'))
-    }
+    throw new Error(i18n.t('translate.error.check_config'))
   }
 
   const provider = getProviderByModel(model)
 
   if (!hasApiKey(provider)) {
     window.message.error(i18n.t('translate.error.check_config'))
-    return {
-      valid: false,
-      error: new Error(i18n.t('translate.error.check_config'))
-    }
+    throw new Error(i18n.t('translate.error.check_config'))
   }
 
   const AI = new AiProvider(provider)
@@ -149,11 +143,7 @@ export async function fetchTranslate({ message, assistant, onResponse }: FetchTr
   try {
     const result = await AI.translate(message, assistant, onResponse)
     if (!result?.trim()) {
-      window.message.error(i18n.t('translate.error.check_config'))
-      return {
-        valid: false,
-        error: new Error(i18n.t('translate.error.check_config'))
-      }
+      throw new Error(i18n.t('translate.error.failed'))
     }
     return result
   } catch (error: any) {
